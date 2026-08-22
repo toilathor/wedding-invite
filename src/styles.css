@@ -1,0 +1,285 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Local Fonts from thiepcuoi.cloud */
+@font-face {
+  font-family: "PinyonScript";
+  src: url("/assets/fonts/Pinyon_Script/PinyonScript-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Birthstone";
+  src: url("/assets/fonts/Birthstone/Birthstone-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Prata";
+  src: url("/assets/fonts/Prata/Prata-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PlayfairDisplay";
+  src: url("/assets/fonts/Playfair_Display/PlayfairDisplay-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "BeVietnamPro";
+  src: url("/assets/fonts/Be_Vietnam_Pro/BeVietnamPro-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Phudu";
+  src: url("/assets/fonts/Phudu/Phudu-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Phudu";
+  src: url("/assets/fonts/Phudu/Phudu-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Phudu";
+  src: url("/assets/fonts/Phudu/Phudu-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Corinthia";
+  src: url("/assets/fonts/Corinthia/Corinthia-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Charmonman";
+  src: url("/assets/fonts/Charmonman/Charmonman-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "MuliDisplayVN";
+  src: url("/assets/fonts/MuliDisplayVN/MuliDisplayVN-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: #FBF7F5;
+    color: #333333;
+    font-family: "BeVietnamPro", sans-serif;
+  }
+}
+
+/* =========================================================
+   SCROLL REVEAL ANIMATIONS (Fade in, Slide in, Stagger)
+========================================================= */
+.reveal {
+  opacity: 0;
+  transform: translateY(35px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-left.revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-right.revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Stagger transition delays */
+.delay-100 { transition-delay: 100ms; }
+.delay-200 { transition-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; }
+.delay-400 { transition-delay: 400ms; }
+.delay-500 { transition-delay: 500ms; }
+
+/* =========================================================
+   ALBUM EXPAND ANIMATION
+========================================================= */
+@keyframes photoExpandIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-photo-expand {
+  animation: photoExpandIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Biilogo Pulse Animation for floating audio player */
+@-webkit-keyframes biilogo-pulse {
+  0% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    -webkit-transform: scale(1.35);
+    transform: scale(1.35);
+    opacity: 0.4;
+  }
+  100% {
+    -webkit-transform: scale(1.6);
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes biilogo-pulse {
+  0% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    -webkit-transform: scale(1.35);
+    transform: scale(1.35);
+    opacity: 0.4;
+  }
+  100% {
+    -webkit-transform: scale(1.6);
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* Audio Floating Player on Bottom-Left - Borderless & Soft */
+.bii-player {
+  position: fixed;
+  bottom: 20px;
+  left: 16px;
+  width: 44px;
+  height: 44px;
+  z-index: 9999;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .bii-player {
+    bottom: 24px;
+    left: 24px;
+    width: 48px;
+    height: 48px;
+  }
+}
+
+.bii-player .playerIcon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: var(--theme-color, #A12F0C);
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 4px 16px rgba(161, 47, 12, 0.4);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bii-player .playerIcon:hover {
+  transform: scale(1.08);
+}
+
+.bii-player:after {
+  content: "";
+  background-color: var(--pulse-color, rgba(161, 47, 12, 0.25));
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+  position: absolute;
+  animation: biilogo-pulse 2s infinite ease-out;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FBF7F5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #A12F0C80;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A12F0C;
+}

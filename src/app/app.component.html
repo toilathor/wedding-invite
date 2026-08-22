@@ -1,0 +1,56 @@
+<div class="min-h-screen flex flex-col bg-[#FBF7F5] selection:bg-[#A12F0C] selection:text-white">
+  <!-- Toast Notification System -->
+  <app-toast></app-toast>
+
+  <!-- 1. Hero / Banner -->
+  <app-banner [data]="weddingData.banner"></app-banner>
+
+  <!-- 2. Invitation & Countdown -->
+  <app-invitation [data]="weddingData.invitation" (onOpenRsvp)="openRsvp()"></app-invitation>
+
+  <!-- 3. Introduction (Groom & Bride) -->
+  <app-introduction [data]="weddingData.introduction"></app-introduction>
+
+  <!-- 4. Story (Love Story) -->
+  <app-story [data]="weddingData.story"></app-story>
+
+  <!-- 5. Timeline (Milestones) -->
+  <app-timeline [data]="weddingData.timeline"></app-timeline>
+
+  <!-- 6. Wedding Events -->
+  <app-events [events]="weddingData.events"></app-events>
+
+  <!-- 7. Wedding Photo Album & Lightbox -->
+  <app-album [data]="weddingData.album"></app-album>
+
+  <!-- 8. Guestbook & Wishes -->
+  <app-guestbook></app-guestbook>
+
+  <!-- 9. Bank & Gift Registry -->
+  <app-bank-gift [data]="weddingData.bank"></app-bank-gift>
+
+  <!-- Footer -->
+  <footer class="bg-[#2A1810] text-[#F4DBCE] py-12 px-4 text-center border-t border-[#F4DBCE]/20">
+    <div class="max-w-xl mx-auto space-y-4">
+      <h3 class="text-3xl md:text-4xl font-pinyon text-white">
+        Quang Thọ &amp; Thúy Hiền
+      </h3>
+      <p class="text-xs md:text-sm font-light text-[#F4DBCE]/80 tracking-widest uppercase">
+        28 . 11 . 2026 • Thank you for celebrating with us!
+      </p>
+      <div class="w-12 h-[1px] bg-[#F4DBCE]/30 mx-auto my-4"></div>
+      <p class="text-[11px] text-stone-400">
+        Thiệp cưới số • Made with love &amp; happiness ❤️
+      </p>
+    </div>
+  </footer>
+
+  <!-- Floating Audio Player (Bottom-Left) -->
+  <app-music-player></app-music-player>
+
+  <!-- Floating Quick Actions Menu (Bottom-Right) -->
+  <app-quick-menu (onOpenRsvp)="openRsvp()"></app-quick-menu>
+
+  <!-- RSVP Modal -->
+  <app-rsvp-modal *ngIf="isRsvpOpen" (onClose)="closeRsvp()"></app-rsvp-modal>
+</div>
