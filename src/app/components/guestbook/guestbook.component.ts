@@ -10,6 +10,7 @@ import {
 } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import confetti from "canvas-confetti";
+import { GuestMessage } from "../../models/wedding-data.model";
 import { GuestbookService } from "../../services/guestbook.service";
 import { ToastService } from "../../services/toast.service";
 
@@ -20,42 +21,44 @@ import { ToastService } from "../../services/toast.service";
   template: `
     <section
       id="sangtrong-message-id"
-      class="relative bg-white overflow-hidden py-8 sm:py-10 md:py-14 lg:py-16 px-4 sm:px-6 md:px-10 reveal"
+      class="relative bg-white overflow-hidden min-h-screen lg:h-screen flex items-center py-10 sm:py-14 md:py-16 px-4 sm:px-6 md:px-10 reveal"
     >
       <!-- Top Left Floral Decor -->
       <img
         src="/assets/images/templates/sangtrong/decor.png"
         alt="Floral Decor Top Left"
-        class="absolute top-0 left-0 md:w-[320px] md:h-[270px] w-[140px] h-[120px] pointer-events-none opacity-80"
+        class="absolute top-0 left-0 md:w-[280px] lg:w-[320px] md:h-[240px] lg:h-[270px] w-[140px] h-[120px] pointer-events-none opacity-80"
       />
       <!-- Bottom Right Floral Decor -->
       <img
         src="/assets/images/templates/sangtrong/flower-decor-bottom.png"
         alt="Floral Decor Bottom Right"
-        class="absolute bottom-0 right-0 md:w-[320px] md:h-[270px] w-[140px] h-[120px] pointer-events-none opacity-80"
+        class="absolute bottom-0 right-0 md:w-[280px] lg:w-[320px] md:h-[240px] lg:h-[270px] w-[140px] h-[120px] pointer-events-none opacity-80"
       />
 
-      <div class="z-10 relative max-w-6xl mx-auto">
+      <div
+        class="z-10 relative max-w-6xl w-full mx-auto h-full flex flex-col justify-center"
+      >
         <!-- 2-Column Responsive Layout: Left (LOVE Ladder Illustration) & Right (Guestbook Form & Wishes) -->
         <div
-          class="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 md:gap-10 lg:gap-12 items-center"
+          class="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 md:gap-8 lg:gap-10 items-center h-full max-h-[90vh]"
         >
           <!-- Left Column: Romantic LOVE Ladder Illustration -->
           <div
-            class="md:col-span-4 flex flex-col items-center justify-center text-center reveal-left delay-100"
+            class="md:col-span-5 flex flex-col items-center justify-center text-center reveal-left delay-100"
           >
             <div class="relative group">
               <img
                 src="/assets/images/templates/sangtrong/love-ladder.png"
                 alt="LOVE Ladder Decoration"
-                class="w-[140px] sm:w-[180px] md:w-[220px] lg:w-[280px] max-h-[180px] sm:max-h-[220px] md:max-h-[380px] h-auto object-contain mx-auto drop-shadow-xs transition-transform duration-700 ease-out group-hover:scale-105 select-none pointer-events-none"
+                class="w-[170px] sm:w-[210px] md:w-[280px] lg:w-[340px] xl:w-[380px] max-h-[200px] sm:max-h-[250px] md:max-h-[460px] lg:max-h-[520px] h-auto object-contain mx-auto drop-shadow-sm transition-transform duration-700 ease-out group-hover:scale-105 select-none pointer-events-none"
               />
             </div>
           </div>
 
           <!-- Right Column: Sổ lưu bút (Form & Message List with refined typography) -->
           <div
-            class="md:col-span-8 flex flex-col justify-center reveal-right delay-200"
+            class="md:col-span-7 flex flex-col justify-center max-h-[85vh] reveal-right delay-200"
           >
             <!-- Section Header -->
             <div class="text-center md:text-left mb-2.5 sm:mb-4 md:mb-5">
@@ -76,15 +79,20 @@ import { ToastService } from "../../services/toast.service";
             </div>
 
             <!-- Form -->
-            <form (ngSubmit)="submitWish()" class="space-y-2.5 font-beVietnamPro">
+            <form
+              (ngSubmit)="submitWish()"
+              class="space-y-2.5 font-beVietnamPro"
+            >
               <div>
                 <input
                   type="text"
-                  [(ngModel)]="name"
+                  [ngModel]="name"
+                  (ngModelChange)="name = $event ? $event.toUpperCase() : ''"
                   name="name"
+                  [disabled]="guestbookService.isLimitReached() || isSubmitting"
                   placeholder="Tên của bạn (tối đa 160 ký tự) *"
                   required
-                  class="w-full h-9 sm:h-10 px-3 sm:px-3.5 rounded-xl border border-stone-300 placeholder-stone-400 text-stone-800 text-xs sm:text-sm focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all bg-stone-50/50 focus:bg-white shadow-inner"
+                  class="w-full h-9 sm:h-10 px-3 sm:px-3.5 rounded-xl border border-stone-300 placeholder-stone-400 text-stone-800 text-xs sm:text-sm uppercase focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all bg-stone-50/50 focus:bg-white shadow-inner disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
                 />
               </div>
 
@@ -94,14 +102,22 @@ import { ToastService } from "../../services/toast.service";
                   [(ngModel)]="content"
                   name="content"
                   rows="4"
-                  placeholder="Nhập lời chúc của bạn (tối đa 3000 ký tự) *"
+                  [disabled]="guestbookService.isLimitReached() || isSubmitting"
+                  [placeholder]="
+                    guestbookService.isLimitReached()
+                      ? 'Bạn đã gửi tối đa 5 lời chúc từ thiết bị này. Cảm ơn tình cảm của bạn! 💕'
+                      : 'Nhập lời chúc của bạn (tối đa 3000 ký tự) *'
+                  "
                   required
-                  class="w-full h-[130px] sm:h-[155px] md:h-[175px] p-3 sm:p-3.5 pr-10 pb-9 rounded-2xl border border-stone-300 resize-none placeholder-stone-400 text-stone-800 text-xs sm:text-sm focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all bg-stone-50/50 focus:bg-white shadow-inner leading-relaxed"
+                  class="w-full h-[130px] sm:h-[155px] md:h-[175px] p-3 sm:p-3.5 pr-10 pb-9 rounded-2xl border border-stone-300 resize-none placeholder-stone-400 text-stone-800 text-xs sm:text-sm focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all bg-stone-50/50 focus:bg-white shadow-inner leading-relaxed disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
                 >
                 </textarea>
 
                 <!-- Lightbulb Icon Button (Bottom-Right Inside Textarea) -->
-                <div class="absolute bottom-2.5 right-2.5 z-10">
+                <div
+                  *ngIf="!guestbookService.isLimitReached()"
+                  class="absolute bottom-2.5 right-2.5 z-10"
+                >
                   <button
                     type="button"
                     (click)="toggleSuggestions($event)"
@@ -176,12 +192,34 @@ import { ToastService } from "../../services/toast.service";
                 </div>
               </div>
 
-              <!-- Submit Button Aligned to the Right -->
-              <div class="flex justify-end pt-0.5">
+              <!-- Submit Button & Counter Area -->
+              <div class="flex items-center justify-between pt-0.5">
+                <span
+                  class="text-[11px] font-medium"
+                  [ngClass]="
+                    guestbookService.isLimitReached()
+                      ? 'text-amber-700 font-semibold'
+                      : 'text-stone-400'
+                  "
+                >
+                  <ng-container *ngIf="guestbookService.myWishesCount() > 0">
+                    {{
+                      guestbookService.isLimitReached()
+                        ? '📌 Đã gửi đủ 5/5 lời chúc'
+                        : 'Đã gửi ' + guestbookService.myWishesCount() + '/5 lời chúc'
+                    }}
+                  </ng-container>
+                </span>
+
                 <button
                   type="submit"
-                  [disabled]="!name.trim() || !content.trim() || isSubmitting"
-                  class="uppercase rounded-full text-white font-prata text-[11px] sm:text-xs md:text-sm tracking-wider min-w-[120px] sm:min-w-[140px] py-2 sm:py-2.5 px-5 sm:px-6 bg-[#A12F0C] hover:bg-[#852509] disabled:opacity-50 transition-all shadow-sm hover:shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                  [disabled]="
+                    !name.trim() ||
+                    !content.trim() ||
+                    isSubmitting ||
+                    guestbookService.isLimitReached()
+                  "
+                  class="uppercase rounded-full text-white font-prata text-[11px] sm:text-xs md:text-sm tracking-wider min-w-[120px] sm:min-w-[140px] py-2 sm:py-2.5 px-5 sm:px-6 bg-[#A12F0C] hover:bg-[#852509] disabled:opacity-50 transition-all shadow-sm hover:shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
                 >
                   <svg
                     *ngIf="!isSubmitting"
@@ -195,7 +233,11 @@ import { ToastService } from "../../services/toast.service";
                     />
                   </svg>
                   <span>{{
-                    isSubmitting ? "Đang gửi..." : "Gửi lời chúc"
+                    isSubmitting
+                      ? "Đang gửi..."
+                      : guestbookService.isLimitReached()
+                      ? "Đã gửi 5/5 lời chúc"
+                      : "Gửi lời chúc"
                   }}</span>
                 </button>
               </div>
@@ -204,37 +246,102 @@ import { ToastService } from "../../services/toast.service";
             <!-- Divider -->
             <div class="my-3 sm:my-4 w-full h-[1px] bg-stone-200"></div>
 
-            <!-- Messages List (Classic Tile Style with Seamless Infinite Auto-Scroll & Hidden Scrollbar) -->
+            <!-- Empty state when no wishes yet -->
             <div
+              *ngIf="guestbookService.messages().length === 0"
+              class="py-6 text-center text-stone-400 text-xs sm:text-sm font-beVietnamPro italic"
+            >
+              Chưa có lời chúc nào. Hãy là người đầu tiên gửi lời chúc mừng đến
+              cô dâu &amp; chú rể nhé! 💕
+            </div>
+
+            <!-- 1. Fixed Pinned Latest Wish from this Device (Stays stationary, gentle warm highlight without icon/badge) -->
+            <div
+              *ngIf="myLatestWish"
+              class="bg-[#FBF5F2]/80 -mx-1 px-2.5 py-2.5 rounded-xl border border-amber-300/60 mb-3 shrink-0"
+            >
+              <div class="flex items-center justify-between mb-1.5">
+                <h4 class="font-bold text-xs sm:text-sm font-prata text-[#A12F0C] uppercase tracking-wide">
+                  {{ myLatestWish.name }} • Bạn
+                </h4>
+                <span class="text-[10px] sm:text-[11px] text-stone-400 font-light font-beVietnamPro">
+                  {{ myLatestWish.createdAt || "Mới đây" }}
+                </span>
+              </div>
+              <p class="text-stone-700 text-xs sm:text-[13px] leading-relaxed font-beVietnamPro">
+                {{ myLatestWish.content }}
+              </p>
+            </div>
+
+            <!-- 2. Scrolling Messages List (Remaining wishes that auto-scroll and loop infinitely) -->
+            <div
+              *ngIf="otherMessages.length > 0"
               #messageList
+              (scroll)="onScroll()"
+              (wheel)="onWheel($event)"
               (mouseenter)="pauseScroll()"
               (mouseleave)="resumeScroll()"
-              (touchstart)="pauseScroll()"
-              (touchend)="resumeScroll()"
-              (touchcancel)="resumeScroll()"
-              class="max-h-[250px] sm:max-h-[290px] md:max-h-[330px] overflow-y-auto text-start flex flex-col gap-3 pr-1 font-beVietnamPro no-scrollbar select-text cursor-default"
+              (touchstart)="onTouchStart($event)"
+              (touchmove)="onTouchMove($event)"
+              (touchend)="onTouchEnd()"
+              (touchcancel)="onTouchEnd()"
+              [ngClass]="
+                myLatestWish
+                  ? 'max-h-[16vh] sm:max-h-[19vh] md:max-h-[24vh] lg:max-h-[27vh]'
+                  : 'max-h-[26vh] sm:max-h-[30vh] md:max-h-[36vh] lg:max-h-[40vh]'
+              "
+              class="overflow-y-auto text-start flex flex-col font-beVietnamPro no-scrollbar select-text cursor-default"
             >
-              <div
-                *ngFor="let msg of loopedMessages; let idx = index"
-                class="border-b border-dashed border-stone-300 pb-4 last:border-b-0"
-              >
-                <div class="flex items-center justify-between mb-1.5">
-                  <h4
-                    class="font-bold text-[#2A1810] text-xs sm:text-sm font-prata"
-                  >
-                    {{ msg.name }}
-                  </h4>
-                  <span
-                    class="text-[10px] sm:text-[11px] text-stone-400 font-light font-beVietnamPro"
-                  >
-                    {{ msg.createdAt || "Mới đây" }}
-                  </span>
-                </div>
-                <p
-                  class="text-stone-700 text-xs sm:text-[13px] leading-relaxed font-beVietnamPro"
+              <!-- Set 1 (Base Messages Cycle) -->
+              <div #firstSet class="flex flex-col gap-3 pb-3">
+                <div
+                  *ngFor="let msg of baseMessages"
+                  class="border-b border-dashed border-stone-300 pb-3.5"
                 >
-                  {{ msg.content }}
-                </p>
+                  <div class="flex items-center justify-between mb-1.5">
+                    <h4 class="font-bold text-xs sm:text-sm font-prata text-[#2A1810] uppercase tracking-wide">
+                      {{ msg.name }}
+                    </h4>
+                    <span
+                      class="text-[10px] sm:text-[11px] text-stone-400 font-light font-beVietnamPro shrink-0"
+                    >
+                      {{ msg.createdAt || "Mới đây" }}
+                    </span>
+                  </div>
+                  <p
+                    class="text-stone-700 text-xs sm:text-[13px] leading-relaxed font-beVietnamPro"
+                  >
+                    {{ msg.content }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Set 2 (Clone for Infinite Seamless Circular Loop - Chỉ hiển thị khi có từ 2 lời chúc trở lên) -->
+              <div
+                *ngIf="isScrollable"
+                class="flex flex-col gap-3 pb-3"
+                aria-hidden="true"
+              >
+                <div
+                  *ngFor="let msg of baseMessages"
+                  class="border-b border-dashed border-stone-300 pb-3.5"
+                >
+                  <div class="flex items-center justify-between mb-1.5">
+                    <h4 class="font-bold text-xs sm:text-sm font-prata text-[#2A1810] uppercase tracking-wide">
+                      {{ msg.name }}
+                    </h4>
+                    <span
+                      class="text-[10px] sm:text-[11px] text-stone-400 font-light font-beVietnamPro shrink-0"
+                    >
+                      {{ msg.createdAt || "Mới đây" }}
+                    </span>
+                  </div>
+                  <p
+                    class="text-stone-700 text-xs sm:text-[13px] leading-relaxed font-beVietnamPro"
+                  >
+                    {{ msg.content }}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -248,13 +355,17 @@ export class GuestbookComponent implements AfterViewInit, OnDestroy {
   toastService = inject(ToastService);
 
   @ViewChild("messageList") messageListRef?: ElementRef<HTMLDivElement>;
+  @ViewChild("firstSet") firstSetRef?: ElementRef<HTMLDivElement>;
 
   name = "";
   content = "";
   isSubmitting = false;
   isSuggestionsOpen = false;
   private isPaused = false;
-  private scrollInterval: any;
+  private rafId: number | null = null;
+  private lastTimestamp = 0;
+  private scrollSpeed = 32; // Tốc độ cuộn 32 pixel/giây (rất mượt mà và dễ đọc)
+  private touchStartY = 0;
 
   wishSuggestions: string[] = [
     "Chúc mừng hạnh phúc! Chúc hai bạn trăm năm hòa hợp, vẹn tròn yêu thương! 💕",
@@ -274,13 +385,38 @@ export class GuestbookComponent implements AfterViewInit, OnDestroy {
     this.isSuggestionsOpen = !this.isSuggestionsOpen;
   }
 
-  get loopedMessages() {
-    const msgs = this.guestbookService.messages();
+  // Lời chúc gần nhất của thiết bị hiện tại (ghim cố định ở trên, không cuộn)
+  get myLatestWish(): GuestMessage | null {
+    const all = this.guestbookService.messages();
+    const myMessages = all.filter((m) => m.deviceId === this.guestbookService.deviceId);
+    return myMessages.length > 0 ? myMessages[0] : null;
+  }
+
+  // Các lời chúc còn lại nằm trong danh sách cuộn
+  get otherMessages(): GuestMessage[] {
+    const all = this.guestbookService.messages();
+    const latest = this.myLatestWish;
+    if (!latest) return all;
+    return all.filter((m) => m.id !== latest.id);
+  }
+
+  get isScrollable(): boolean {
+    return this.otherMessages.length > 1;
+  }
+
+  get baseMessages(): GuestMessage[] {
+    const msgs = this.otherMessages;
     if (!msgs || msgs.length === 0) return [];
-    if (msgs.length === 1) {
-      return [msgs[0], msgs[0], msgs[0], msgs[0]];
+    // Nếu chỉ có 1 lời chúc trong danh sách cuộn -> hiển thị tĩnh
+    if (msgs.length === 1) return msgs;
+
+    // Từ 2 lời chúc trở lên: Đảm bảo có tối thiểu 8 items để chiều cao vượt khung hiển thị -> cuộn vô tận mượt mà
+    const repeatCount = Math.max(1, Math.ceil(8 / msgs.length));
+    const result: typeof msgs = [];
+    for (let i = 0; i < repeatCount; i++) {
+      result.push(...msgs);
     }
-    return [...msgs, ...msgs];
+    return result;
   }
 
   ngAfterViewInit() {
@@ -292,21 +428,93 @@ export class GuestbookComponent implements AfterViewInit, OnDestroy {
     this.isSuggestionsOpen = false;
   }
 
+  onScroll() {
+    if (!this.isScrollable || !this.messageListRef) return;
+    const el = this.messageListRef.nativeElement;
+    const singleSetHeight =
+      this.firstSetRef?.nativeElement?.offsetHeight || el.scrollHeight / 2;
+
+    if (singleSetHeight <= 0) return;
+
+    // Khi cuộn chạm hoặc vượt chu kỳ 1 -> lập tức quay về vị trí modulo chu kỳ 1
+    if (el.scrollTop >= singleSetHeight) {
+      el.scrollTop -= singleSetHeight;
+    }
+  }
+
+  onWheel(event: WheelEvent) {
+    if (!this.isScrollable || !this.messageListRef) return;
+    const el = this.messageListRef.nativeElement;
+    const singleSetHeight =
+      this.firstSetRef?.nativeElement?.offsetHeight || el.scrollHeight / 2;
+
+    if (singleSetHeight <= 0) return;
+
+    // Khi người dùng lăn chuột ngược lên ở đầu trang -> nhảy về vị trí tương đương ở chu kỳ 1 để cuộn lên vô tận
+    if (event.deltaY < 0 && el.scrollTop <= 1) {
+      el.scrollTop += singleSetHeight;
+    }
+  }
+
+  onTouchStart(e: TouchEvent) {
+    this.pauseScroll();
+    this.touchStartY = e.touches[0]?.clientY || 0;
+  }
+
+  onTouchMove(e: TouchEvent) {
+    if (!this.isScrollable || !this.messageListRef) return;
+    const el = this.messageListRef.nativeElement;
+    const singleSetHeight =
+      this.firstSetRef?.nativeElement?.offsetHeight || el.scrollHeight / 2;
+
+    if (singleSetHeight <= 0) return;
+
+    const currentY = e.touches[0]?.clientY || 0;
+    const deltaY = this.touchStartY - currentY;
+
+    if (deltaY < 0 && el.scrollTop <= 1) {
+      el.scrollTop += singleSetHeight;
+    }
+    this.touchStartY = currentY;
+  }
+
+  onTouchEnd() {
+    this.resumeScroll();
+  }
+
   private startAutoScroll() {
-    this.scrollInterval = setInterval(() => {
-      if (this.isPaused || !this.messageListRef) return;
-      const el = this.messageListRef.nativeElement;
-      if (el.scrollHeight <= el.clientHeight) return;
+    this.stopAutoScroll();
 
-      const singleSetHeight = el.scrollHeight / 2;
+    const loop = (timestamp: number) => {
+      if (!this.lastTimestamp) this.lastTimestamp = timestamp;
+      const deltaTime = (timestamp - this.lastTimestamp) / 1000;
+      this.lastTimestamp = timestamp;
 
-      // Seamless infinite loop: when scrolled past half, reset by exact half height without visual jump
-      if (el.scrollTop >= singleSetHeight) {
-        el.scrollTop -= singleSetHeight;
-      } else {
-        el.scrollTop += 1;
+      if (this.isScrollable && !this.isPaused && this.messageListRef) {
+        const el = this.messageListRef.nativeElement;
+        const singleSetHeight =
+          this.firstSetRef?.nativeElement?.offsetHeight || el.scrollHeight / 2;
+
+        if (singleSetHeight > 0) {
+          el.scrollTop += this.scrollSpeed * deltaTime;
+          if (el.scrollTop >= singleSetHeight) {
+            el.scrollTop -= singleSetHeight;
+          }
+        }
       }
-    }, 35);
+
+      this.rafId = requestAnimationFrame(loop);
+    };
+
+    this.rafId = requestAnimationFrame(loop);
+  }
+
+  private stopAutoScroll() {
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+    this.lastTimestamp = 0;
   }
 
   pauseScroll() {
@@ -317,26 +525,39 @@ export class GuestbookComponent implements AfterViewInit, OnDestroy {
     this.isPaused = false;
   }
 
-  submitWish() {
+  async submitWish() {
     if (!this.name.trim() || !this.content.trim()) return;
 
+    if (this.guestbookService.isLimitReached()) {
+      this.toastService.show(
+        "Bạn đã gửi tối đa 5 lời chúc từ thiết bị này. Cảm ơn tình cảm của bạn! 💕",
+        "info",
+      );
+      return;
+    }
+
     this.isSubmitting = true;
-    this.guestbookService.addMessage(this.name, this.content);
+    const res = await this.guestbookService.addMessage(this.name, this.content);
 
-    confetti({
-      particleCount: 50,
-      spread: 60,
-      origin: { y: 0.7 },
-      colors: ["#A12F0C", "#F4DBCE", "#D4AF37"],
-    });
+    if (res.success) {
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: { y: 0.7 },
+        colors: ["#A12F0C", "#F4DBCE", "#D4AF37"],
+      });
 
-    this.toastService.show(
-      "Cảm ơn bạn đã gửi lời chúc mừng đến dâu rể! 💕",
-      "success",
-    );
+      this.toastService.show(
+        "Cảm ơn bạn đã gửi lời chúc mừng đến dâu rể! 💕",
+        "success",
+      );
 
-    this.name = "";
-    this.content = "";
+      this.name = "";
+      this.content = "";
+    } else if (res.error) {
+      this.toastService.show(res.error, "error");
+    }
+
     this.isSubmitting = false;
 
     // Reset scroll position
@@ -348,8 +569,6 @@ export class GuestbookComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.scrollInterval) {
-      clearInterval(this.scrollInterval);
-    }
+    this.stopAutoScroll();
   }
 }

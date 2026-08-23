@@ -78,6 +78,8 @@ export interface GuestMessage {
   name: string;
   content: string;
   createdAt?: string;
+  deviceId?: string;
+  isPinned?: boolean;
 }
 
 export interface BankData {
@@ -96,15 +98,19 @@ export interface BankData {
 export interface RSVPFormData {
   name: string;
   phone: string;
-  guestsCount: number;
-  attending: boolean;
-  ceremony: boolean;
-  party: boolean;
-  notes?: string;
+  isAttending: boolean;
+  attendParty?: boolean;
+  attendGroom?: boolean;
+  attendBride?: boolean;
+  guestsCount?: number;
+  note?: string;
+  createdAt?: any;
+  deviceId?: string;
 }
 
 export interface WeddingData {
   audioUrl?: string;
+  audioUrls?: string[];
   banner: BannerData;
   invitation: InvitationData;
   introduction: IntroData;

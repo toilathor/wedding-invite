@@ -1,0 +1,40 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Quy tắc cho Sổ lưu bút (Wishes)
+    match /wishes/{wishId} {
+      // Cho phép mọi khách xem lời chúc
+      allow read: if true;
+      
+      // Cho phép mọi khách gửi lời chúc hợp lệ (tối đa 160 ký tự tên, 3000 ký tự nội dung)
+      allow create: if request.resource.data.name is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.name.size() <= 160
+                    && request.resource.data.content is string
+                    && request.resource.data.content.size() > 0
+                    && request.resource.data.content.size() <= 3000;
+                    
+      // Khóa sửa hoặc xóa đối với khách vãng lai
+      allow update, delete: if false;
+    }
+
+    // Quy tắc cho Xác nhận tham dự (RSVP)
+    match /rsvps/{phone} {
+      // Cho phép đọc thông tin RSVP
+      allow read: if true;
+
+      // Cho phép tạo mới hoặc cập nhật thông tin xác nhận tham dự
+      allow create, update: if request.resource.data.name is string
+                            && request.resource.data.name.size() > 0
+                            && request.resource.data.name.size() <= 160
+                            && request.resource.data.phone is string
+                            && request.resource.data.phone.size() >= 10
+                            && request.resource.data.phone.size() <= 15
+                            && request.resource.data.isAttending is bool;
+
+      // Không cho phép khách xóa
+      allow delete: if false;
+    }
+  }
+}

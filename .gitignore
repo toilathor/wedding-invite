@@ -36,3 +36,13 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+src/environments/environment.ts
+src/environments/environment.prod.ts
+src/environments/environment.development.ts
+!src/environments/environment.example.ts
+
+# Firebase local caches
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*

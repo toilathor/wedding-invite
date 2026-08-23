@@ -19,22 +19,22 @@ import { PageViewService } from "../../services/pageview.service";
     <!-- 1. Page Gallery Section -->
     <section
       id="wedding-album-section"
-      class="relative max-w-[1443px] mx-auto py-8 sm:py-10 md:py-14 lg:py-16 px-4 sm:px-6 md:px-8 reveal"
+      class="relative max-w-[1443px] w-full mx-auto min-h-screen lg:h-screen flex flex-col justify-center py-6 sm:py-8 md:py-10 lg:py-12 px-4 sm:px-6 md:px-8 reveal"
     >
       <!-- Title -->
       <h2
-        class="text-center text-[34px] sm:text-[44px] md:text-[64px] leading-tight md:leading-[80px] font-pinyonScript text-[#A12F0C] mb-3 sm:mb-4 md:mb-6"
+        class="text-center text-[30px] sm:text-[40px] md:text-[52px] lg:text-[60px] leading-tight font-pinyonScript text-[#A12F0C] mb-2.5 sm:mb-3 md:mb-4 lg:mb-5"
       >
         {{ data.title }}
       </h2>
 
       <!-- Gallery Grid: Initial Photos (4 on Mobile, 8 on Desktop when collapsed) -->
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-3.5 lg:gap-4 max-h-[70vh] overflow-y-auto no-scrollbar py-1">
         <div
           *ngFor="let img of initialAlbums; let idx = index"
           (click)="openLightbox(idx)"
           [ngClass]="idx >= 4 ? (showAll ? 'block' : 'hidden md:block') : 'block'"
-          class="group relative aspect-[3/4] md:aspect-[4/5] rounded-xl sm:rounded-2xl md:rounded-[24px] overflow-hidden shadow-sm hover:shadow-2xl cursor-pointer transition-all duration-300 bg-stone-100"
+          class="group relative aspect-[3/4] md:aspect-[4/5] max-h-[28vh] md:max-h-[32vh] rounded-xl sm:rounded-2xl md:rounded-[20px] overflow-hidden shadow-sm hover:shadow-2xl cursor-pointer transition-all duration-300 bg-stone-100 mx-auto w-full"
         >
           <img
             [src]="img"
@@ -147,14 +147,14 @@ import { PageViewService } from "../../services/pageview.service";
 
       <!-- Expand / Collapse Button (Shows on mobile when > 4 photos, on desktop when > initialCount) -->
       <div
-        class="flex justify-center mt-4 sm:mt-6 md:mt-10"
+        class="flex justify-center mt-3 sm:mt-4 md:mt-6"
         *ngIf="data.albums.length > 4"
         [ngClass]="{ 'md:hidden': data.albums.length <= initialCount }"
       >
         <button
           type="button"
           (click)="toggleExpand()"
-          class="group uppercase rounded-full text-white font-prata text-xs sm:text-sm tracking-wider px-6 sm:px-8 py-2.5 sm:py-3.5 md:py-4 bg-[#A12F0C] hover:bg-[#852509] transition-all shadow-sm hover:shadow-lg active:scale-95 flex items-center gap-2 cursor-pointer"
+          class="group uppercase rounded-full text-white font-prata text-[11px] sm:text-xs md:text-sm tracking-wider px-5 sm:px-7 py-2 sm:py-2.5 md:py-3 bg-[#A12F0C] hover:bg-[#852509] transition-all shadow-sm hover:shadow-lg active:scale-95 flex items-center gap-2 cursor-pointer"
         >
           <span>{{ showAll ? "Thu gọn album" : "Xem thêm ảnh" }}</span>
           <svg

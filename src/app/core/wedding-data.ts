@@ -12,7 +12,11 @@ import {
 } from "../models/wedding-data.model";
 
 export const WEDDING_DATA: WeddingData = {
-  audioUrl: "/assets/music/wedding-song.mp3",
+  audioUrl: "/assets/music/Hon-Ca-Yeu-Duc-Phuc.mp3",
+  audioUrls: [
+    "/assets/music/Hon-Ca-Yeu-Duc-Phuc.mp3",
+    "/assets/music/wedding-song.mp3",
+  ],
   banner: <BannerData>{
     groom: "Quang Thọ",
     bride: "Thúy Hiền",
@@ -141,15 +145,7 @@ export const WEDDING_DATA: WeddingData = {
     ],
   },
 
-  messages: <GuestMessage[]>[
-    {
-      id: 1,
-      name: "Huy Thanh Jewelry",
-      content:
-        "Huy Thanh rất vui khi được đồng hành cùng hai bạn trong chặng đường hạnh phúc. Dù sông có đổi núi có dời, chúc hai bạn vẫn một đời thương nhau <3",
-      createdAt: "2026-06-03",
-    },
-  ],
+  messages: <GuestMessage[]>[],
 
   bank: <BankData>{
     nameGroom: "Lê Quang Thọ",

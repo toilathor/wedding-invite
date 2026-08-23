@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output, inject, HostListener } from '@angular/
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../services/toast.service';
+import { RsvpService } from '../../services/rsvp.service';
 import confetti from 'canvas-confetti';
 
 interface GuestOption {
@@ -111,12 +112,25 @@ interface GuestOption {
               </label>
               <input
                 type="tel"
+                inputmode="numeric"
+                maxlength="10"
                 [(ngModel)]="phone"
+                (keydown)="onPhoneKeyDown($event)"
+                (input)="onPhoneInput($event)"
+                (paste)="onPhonePaste($event)"
+                (blur)="onPhoneBlur()"
                 name="rsvpPhone"
-                placeholder="Số điện thoại để dâu rể liên hệ..."
+                placeholder="VD: 0912345678 (10 số)..."
                 required
-                class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#F4DBCE] text-stone-800 text-sm focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all shadow-inner font-beVietnamPro"
+                [ngClass]="phoneError ? 'border-red-500 focus:border-red-600 focus:ring-red-500' : 'border-[#F4DBCE] focus:border-[#A12F0C] focus:ring-[#A12F0C]'"
+                class="w-full px-4 py-2.5 rounded-xl bg-white border text-stone-800 text-sm focus:outline-none focus:ring-1 transition-all shadow-inner font-beVietnamPro"
               />
+              <p *ngIf="phoneError" class="text-[11px] text-red-600 font-beVietnamPro mt-1 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+                <span>{{ phoneError }}</span>
+              </p>
             </div>
 
             <!-- Smooth Collapsible Section for Events & Guest Count -->
@@ -269,11 +283,13 @@ interface GuestOption {
 })
 export class RsvpModalComponent {
   @Output() onClose = new EventEmitter<void>();
-  toastService = inject(ToastService);
+  private toastService = inject(ToastService);
+  private rsvpService = inject(RsvpService);
 
   isAttending = true;
   name = '';
   phone = '';
+  phoneError = '';
   attendParty = true;
   attendGroom = false;
   attendBride = false;
@@ -304,26 +320,132 @@ export class RsvpModalComponent {
     this.isDropdownOpen = false;
   }
 
-  submitRsvp() {
-    if (!this.name.trim() || !this.phone.trim()) return;
+  onPhoneKeyDown(event: KeyboardEvent) {
+    const allowedKeys = [
+      'Backspace',
+      'Delete',
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowUp',
+      'ArrowDown',
+      'Tab',
+      'Enter',
+      'Home',
+      'End',
+    ];
+    // Cho phép các phím điều hướng và tổ hợp Ctrl / Cmd + A, C, V, X...
+    if (allowedKeys.includes(event.key) || event.ctrlKey || event.metaKey) {
+      return;
+    }
+    const input = event.target as HTMLInputElement;
+    const isTextSelected = (input.selectionEnd ?? 0) - (input.selectionStart ?? 0) > 0;
 
-    this.isSubmitting = true;
-
-    if (this.isAttending) {
-      confetti({
-        particleCount: 60,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#A12F0C', '#F4DBCE', '#D4AF37']
-      });
-      this.toastService.show(`Cảm ơn ${this.name}! Chúng mình rất mong chờ được đón tiếp bạn. 💕`, 'success', 4000);
-    } else {
-      this.toastService.show(`Cảm ơn ${this.name} đã gửi lời chúc tốt đẹp đến hai đứa mình! 💌`, 'info', 4000);
+    // Chặn tất cả các ký tự không phải chữ số 0-9
+    if (!/^[0-9]$/.test(event.key)) {
+      event.preventDefault();
+      return;
     }
 
-    setTimeout(() => {
+    // Giới hạn đúng 10 chữ số
+    if (input.value.length >= 10 && !isTextSelected) {
+      event.preventDefault();
+    }
+  }
+
+  onPhoneInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    let val = input.value.replace(/[^0-9]/g, '');
+    // Giới hạn tối đa 10 chữ số
+    if (val.length > 10) {
+      val = val.slice(0, 10);
+    }
+    this.phone = val;
+    input.value = val;
+
+    if (this.phoneError) {
+      const validation = this.rsvpService.validatePhone(this.phone);
+      if (validation.isValid) {
+        this.phoneError = '';
+      }
+    }
+  }
+
+  onPhonePaste(event: ClipboardEvent) {
+    event.preventDefault();
+    const pasteData = (event.clipboardData?.getData('text') || '').trim();
+    let cleaned = pasteData.replace(/[\s.\-()]/g, '');
+    // Tự động chuyển đầu số +84 hoặc 84 về 0
+    if (cleaned.startsWith('+84')) {
+      cleaned = '0' + cleaned.slice(3);
+    } else if (cleaned.startsWith('84') && cleaned.length === 11) {
+      cleaned = '0' + cleaned.slice(2);
+    }
+    // Chỉ giữ lại chữ số và cắt tối đa 10 số
+    cleaned = cleaned.replace(/[^0-9]/g, '').slice(0, 10);
+    this.phone = cleaned;
+    this.onPhoneBlur();
+  }
+
+  onPhoneBlur() {
+    if (this.phone.trim()) {
+      const validation = this.rsvpService.validatePhone(this.phone);
+      this.phoneError = validation.isValid ? '' : (validation.errorMessage || 'Số điện thoại không hợp lệ.');
+    } else {
+      this.phoneError = '';
+    }
+  }
+
+  async submitRsvp() {
+    if (!this.name.trim() || !this.phone.trim() || this.isSubmitting) return;
+
+    const phoneValidation = this.rsvpService.validatePhone(this.phone);
+    if (!phoneValidation.isValid) {
+      this.phoneError = phoneValidation.errorMessage || 'Số điện thoại không hợp lệ.';
+      this.toastService.show(this.phoneError, 'error');
+      return;
+    }
+
+    this.phoneError = '';
+    this.isSubmitting = true;
+
+    try {
+      const res = await this.rsvpService.submitRsvp({
+        name: this.name,
+        phone: this.phone,
+        isAttending: this.isAttending,
+        attendParty: this.attendParty,
+        attendGroom: this.attendGroom,
+        attendBride: this.attendBride,
+        guestsCount: this.selectedGuestCount,
+        note: this.note,
+      });
+
+      if (!res.success) {
+        this.toastService.show(res.error || 'Có lỗi xảy ra, vui lòng thử lại!', 'error');
+        this.isSubmitting = false;
+        return;
+      }
+
+      if (this.isAttending) {
+        confetti({
+          particleCount: 60,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#A12F0C', '#F4DBCE', '#D4AF37']
+        });
+        this.toastService.show(`Cảm ơn ${this.name.trim()}! Chúng mình rất mong chờ được đón tiếp bạn. 💕`, 'success', 4000);
+      } else {
+        this.toastService.show(`Cảm ơn ${this.name.trim()} đã gửi lời chúc tốt đẹp đến hai đứa mình! 💌`, 'info', 4000);
+      }
+
+      setTimeout(() => {
+        this.isSubmitting = false;
+        this.onClose.emit();
+      }, 600);
+    } catch (error) {
+      console.error('Lỗi khi gửi xác nhận RSVP:', error);
+      this.toastService.show('Không thể gửi xác nhận, vui lòng thử lại sau!', 'error');
       this.isSubmitting = false;
-      this.onClose.emit();
-    }, 600);
+    }
   }
 }
