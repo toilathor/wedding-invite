@@ -1,6 +1,7 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef, inject, HostListener, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WEDDING_DATA } from './core/wedding-data';
+import { PageViewService } from './services/pageview.service';
 import { BannerComponent } from './components/banner/banner.component';
 import { InvitationComponent } from './components/invitation/invitation.component';
 import { IntroductionComponent } from './components/introduction/introduction.component';
@@ -14,6 +15,11 @@ import { MusicPlayerComponent } from './components/music-player/music-player.com
 import { RsvpModalComponent } from './components/rsvp-modal/rsvp-modal.component';
 import { ToastComponent } from './components/toast/toast.component';
 import { QuickMenuComponent } from './components/quick-menu/quick-menu.component';
+
+export interface PageInfo {
+  id: string;
+  title: string;
+}
 
 @Component({
   selector: 'app-root',
@@ -37,46 +43,122 @@ import { QuickMenuComponent } from './components/quick-menu/quick-menu.component
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements AfterViewInit, OnDestroy {
   weddingData = WEDDING_DATA;
+  pageViewService = inject(PageViewService);
   isRsvpOpen = false;
+
+  @ViewChild('pageContainer') pageContainerRef?: ElementRef<HTMLDivElement>;
+
+  pages: PageInfo[] = [
+    { id: 'page-banner', title: 'Trang đầu' },
+    { id: 'page-invitation', title: 'Lời mời & Đếm ngược' },
+    { id: 'page-introduction', title: 'Cô dâu & Chú rể' },
+    { id: 'page-story', title: 'Chuyện chúng mình' },
+    { id: 'page-timeline', title: 'Cột mốc tình yêu' },
+    { id: 'page-events', title: 'Sự kiện cưới' },
+    { id: 'page-album', title: 'Album ảnh cưới' },
+    { id: 'page-guestbook', title: 'Sổ lưu bút' },
+    { id: 'page-bank-gift', title: 'Mừng cưới & Cảm ơn' }
+  ];
+
+  private observer: IntersectionObserver | null = null;
 
   openRsvp() {
     this.isRsvpOpen = true;
+    this.pageViewService.setLocked(true);
   }
 
   closeRsvp() {
     this.isRsvpOpen = false;
+    this.pageViewService.setLocked(false);
+  }
+
+  goToPage(index: number) {
+    this.pageViewService.goToPage(index);
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent) {
+    this.pageViewService.handleKeyDown(event);
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    if (typeof window === 'undefined' || window.innerWidth >= 1024) return;
+    this.updateActiveSectionOnMobile();
+  }
+
+  private updateActiveSectionOnMobile() {
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('.pageview-section'));
+    if (sections.length === 0) return;
+
+    const viewportTarget = window.innerHeight * 0.35;
+    let closestIndex = 0;
+    let minDistance = Infinity;
+
+    sections.forEach((sec, idx) => {
+      const rect = sec.getBoundingClientRect();
+      if (rect.top <= viewportTarget && rect.bottom >= viewportTarget) {
+        closestIndex = idx;
+        minDistance = 0;
+      } else {
+        const distance = Math.abs(rect.top - viewportTarget);
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestIndex = idx;
+        }
+      }
+    });
+
+    if (this.pageViewService.currentPageIndex() !== closestIndex) {
+      this.pageViewService.currentPageIndex.set(closestIndex);
+    }
   }
 
   ngAfterViewInit() {
-    if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('revealed');
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        {
-          threshold: 0.12,
-          rootMargin: '0px 0px -40px 0px'
-        }
+    if (typeof window === 'undefined') return;
+
+    const container = this.pageContainerRef?.nativeElement;
+    if (container) {
+      const sectionElements = Array.from(
+        container.querySelectorAll<HTMLElement>('.pageview-section')
       );
+      this.pageViewService.init(container, sectionElements);
 
-      const observeElements = () => {
-        document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach((el) => {
-          if (!el.classList.contains('revealed')) {
-            observer.observe(el);
+      // Setup IntersectionObserver for reveal animations
+      if ('IntersectionObserver' in window) {
+        const isDesktop = window.innerWidth >= 1024;
+        this.observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+              }
+            });
+          },
+          {
+            root: isDesktop ? container : null,
+            threshold: 0.08,
+            rootMargin: '0px 0px -20px 0px'
           }
-        });
-      };
+        );
 
-      observeElements();
-      setTimeout(observeElements, 400);
-      setTimeout(observeElements, 1200);
+        const observeElements = () => {
+          container.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach((el) => {
+            this.observer?.observe(el);
+          });
+        };
+
+        observeElements();
+        setTimeout(observeElements, 300);
+        setTimeout(observeElements, 1000);
+      }
     }
+  }
+
+  ngOnDestroy() {
+    this.observer?.disconnect();
+    this.pageViewService.destroy();
   }
 }

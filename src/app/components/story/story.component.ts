@@ -18,30 +18,30 @@ import { StoryData } from "../../models/wedding-data.model";
       </div>
 
       <div
-        class="max-w-[1443px] mx-auto pt-[55px] md:pt-[95px] w-full px-4 md:px-[15px]"
+        class="max-w-[1443px] mx-auto pt-3 sm:pt-6 md:pt-10 w-full px-4 md:px-[15px]"
       >
         <!-- Title -->
         <h2
-          class="text-center text-[40px] md:text-[72px] leading-[50px] md:leading-[90px] font-pinyonScript md:mb-6 px-4 text-[#A12F0C] reveal delay-100"
+          class="text-center text-[34px] sm:text-[46px] md:text-[64px] leading-tight md:leading-[80px] font-pinyonScript md:mb-3 px-4 text-[#A12F0C] reveal delay-100"
         >
           {{ data.title }}
         </h2>
 
         <!-- Content (Soft, non-bold, elegant typography) -->
-        <div class="w-full max-w-[760px] mx-auto px-4 reveal delay-200">
+        <div class="w-full max-w-[760px] mx-auto px-2 sm:px-4 reveal delay-200">
           <div
-            class="text-sm md:text-base font-light font-beVietnamPro text-stone-700 leading-relaxed tracking-wide"
+            class="text-xs sm:text-sm md:text-base font-light font-beVietnamPro text-stone-700 leading-relaxed tracking-wide"
             [innerHTML]="data.contentHtml"
           ></div>
         </div>
 
-        <!-- Arch Frame Photo with Flower Decor - Taller (~20% higher) & Flush to Bottom -->
+        <!-- Arch Frame Photo with Flower Decor - Flush to Bottom -->
         <div
-          class="relative mt-8 md:mt-12 max-w-[340px] sm:max-w-[420px] md:max-w-[720px] h-[360px] sm:h-[460px] md:h-[624px] lg:h-[675px] px-[12px] mx-auto mb-0 reveal delay-300"
+          class="relative mt-4 sm:mt-6 md:mt-8 max-w-[280px] sm:max-w-[380px] md:max-w-[580px] lg:max-w-[640px] h-[250px] sm:h-[340px] md:h-[420px] lg:h-[480px] px-[10px] mx-auto mb-0 reveal delay-300"
         >
           <!-- Main Image Frame -->
           <div
-            class="z-30 absolute left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-3 w-full h-full max-w-[320px] sm:max-w-[400px] md:max-w-none border border-[#A12F0C] rounded-tl-[180px] rounded-tr-[180px] md:rounded-tl-[320px] md:rounded-tr-[320px] overflow-hidden bg-white shadow-xl"
+            class="z-30 absolute left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-3 w-full h-full max-w-[260px] sm:max-w-[360px] md:max-w-none border border-[#A12F0C] rounded-tl-[160px] rounded-tr-[160px] md:rounded-tl-[300px] md:rounded-tr-[300px] overflow-hidden bg-white shadow-xl"
           >
             <img
               [src]="data.image"
@@ -53,14 +53,14 @@ import { StoryData } from "../../models/wedding-data.model";
 
           <!-- Secondary Arched Border Frame -->
           <div
-            class="absolute bg-transparent left-1/2 -translate-x-1/2 md:left-[12px] md:translate-x-0 top-0 z-20 border-r border-[#A12F0C] rounded-tl-[180px] rounded-tr-[180px] md:rounded-tl-[320px] md:rounded-tr-[320px] w-full max-w-[320px] sm:max-w-[400px] md:max-w-full h-full pointer-events-none"
+            class="absolute bg-transparent left-1/2 -translate-x-1/2 md:left-[12px] md:translate-x-0 top-0 z-20 border-r border-[#A12F0C] rounded-tl-[160px] rounded-tr-[160px] md:rounded-tl-[300px] md:rounded-tr-[300px] w-full max-w-[260px] sm:max-w-[360px] md:max-w-full h-full pointer-events-none"
           ></div>
 
           <!-- Flower Decor Ornament -->
           <img
             src="/assets/images/templates/sangtrong/6.png"
             alt="Decor Flower"
-            class="z-30 absolute -bottom-6 right-0 md:-bottom-10 md:-right-[60px] w-[120px] h-[105px] md:w-[320px] md:h-[240px] pointer-events-none"
+            class="z-30 absolute -bottom-4 right-0 sm:-bottom-6 sm:-right-2 md:-bottom-8 md:-right-[40px] w-[90px] h-[78px] sm:w-[120px] sm:h-[105px] md:w-[240px] md:h-[180px] pointer-events-none"
           />
         </div>
       </div>

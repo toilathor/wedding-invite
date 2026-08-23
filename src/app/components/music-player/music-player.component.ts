@@ -9,29 +9,53 @@ import { AudioService } from '../../services/audio.service';
   template: `
     <div
       class="bii-player"
+      [class.is-playing]="audioService.isPlaying()"
       [style.--theme-color]="'#A12F0C'"
-      [style.--pulse-color]="'#A12F0C4D'">
+      [style.--pulse-color]="'#A12F0C4D'"
+    >
+      <!-- Floating Musical Notes when Playing -->
       <div
+        *ngIf="audioService.isPlaying()"
+        class="absolute inset-0 pointer-events-none overflow-visible z-0"
+      >
+        <span class="floating-note floating-note-1 text-[#A12F0C] select-none">♪</span>
+        <span class="floating-note floating-note-2 text-[#C04A26] select-none">♫</span>
+        <span class="floating-note floating-note-3 text-[#A12F0C] select-none">♬</span>
+        <span class="floating-note floating-note-4 text-[#D4AF37] select-none">♩</span>
+      </div>
+
+      <button
+        type="button"
         class="playerIcon"
         (click)="audioService.toggle()"
-        [title]="audioService.isPlaying() ? 'Tắt nhạc' : 'Bật nhạc'">
-
-        <!-- Mute Icon (when NOT playing) -->
-        <span *ngIf="!audioService.isPlaying()" id="playerVolumeOff" class="flex items-center justify-center text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06zm7.137 2.096a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0z"/>
+        [attr.aria-label]="
+          audioService.isPlaying() ? 'Tắt nhạc nền' : 'Bật nhạc nền'
+        "
+        [title]="audioService.isPlaying() ? 'Tắt nhạc' : 'Bật nhạc'"
+      >
+        <!-- Spinning Musical Note Icon -->
+        <div
+          class="flex items-center justify-center text-white"
+          [class.animate-spin-music]="audioService.isPlaying()"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-xs"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
+            />
           </svg>
-        </span>
+        </div>
 
-        <!-- Volume Up Icon (when playing) -->
-        <span *ngIf="audioService.isPlaying()" id="playerVolumeOn" class="flex items-center justify-center text-white animate-pulse">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-.708.707A7.476 7.476 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/>
-            <path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.483 5.483 0 0 1 11.025 8a5.483 5.483 0 0 1-1.61 3.89l.706.706z"/>
-            <path d="M8.707 11.182A4.486 4.486 0 0 0 10.025 8a4.486 4.486 0 0 0-1.318-3.182L8 5.525A3.489 3.489 0 0 1 9.025 8 3.49 3.49 0 0 1 8 10.475l.707.707zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06z"/>
-          </svg>
-        </span>
-      </div>
+        <!-- Diagonal mute indicator bar when paused -->
+        <div
+          *ngIf="!audioService.isPlaying()"
+          class="absolute w-6 sm:w-7 h-[2px] bg-white/90 rotate-45 rounded-full shadow-xs pointer-events-none"
+        ></div>
+      </button>
     </div>
   `
 })

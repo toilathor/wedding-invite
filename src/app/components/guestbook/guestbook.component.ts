@@ -3,6 +3,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  HostListener,
   inject,
   OnDestroy,
   ViewChild,
@@ -19,7 +20,7 @@ import { ToastService } from "../../services/toast.service";
   template: `
     <section
       id="sangtrong-message-id"
-      class="relative bg-white overflow-hidden py-12 md:py-20 px-4 sm:px-6 md:px-10 reveal"
+      class="relative bg-white overflow-hidden py-6 md:py-10 lg:py-12 px-4 sm:px-6 md:px-10 reveal"
     >
       <!-- Top Left Floral Decor -->
       <img
@@ -37,45 +38,45 @@ import { ToastService } from "../../services/toast.service";
       <div class="z-10 relative max-w-6xl mx-auto">
         <!-- 2-Column Responsive Layout: Left (LOVE Ladder Illustration) & Right (Guestbook Form & Wishes) -->
         <div
-          class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center"
+          class="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 md:gap-10 lg:gap-12 items-center"
         >
           <!-- Left Column: Romantic LOVE Ladder Illustration -->
           <div
-            class="lg:col-span-5 flex flex-col items-center justify-center text-center reveal-left delay-100"
+            class="md:col-span-4 flex flex-col items-center justify-center text-center reveal-left delay-100"
           >
             <div class="relative group">
               <img
                 src="/assets/images/templates/sangtrong/love-ladder.png"
                 alt="LOVE Ladder Decoration"
-                class="w-[180px] sm:w-[220px] lg:w-[320px] max-h-[460px] h-auto object-contain mx-auto drop-shadow-sm transition-transform duration-700 ease-out group-hover:scale-105 select-none pointer-events-none"
+                class="w-[140px] sm:w-[180px] md:w-[220px] lg:w-[280px] max-h-[180px] sm:max-h-[220px] md:max-h-[380px] h-auto object-contain mx-auto drop-shadow-xs transition-transform duration-700 ease-out group-hover:scale-105 select-none pointer-events-none"
               />
             </div>
           </div>
 
           <!-- Right Column: Sổ lưu bút (Form & Message List with refined typography) -->
           <div
-            class="lg:col-span-7 flex flex-col justify-center reveal-right delay-200"
+            class="md:col-span-8 flex flex-col justify-center reveal-right delay-200"
           >
             <!-- Section Header -->
-            <div class="text-center lg:text-left mb-4 md:mb-6">
+            <div class="text-center md:text-left mb-2.5 sm:mb-4 md:mb-5">
               <h2
-                class="text-[38px] sm:text-[46px] md:text-[54px] leading-tight font-pinyonScript text-[#A12F0C]"
+                class="text-[32px] sm:text-[40px] md:text-[50px] leading-tight font-pinyonScript text-[#A12F0C]"
               >
                 Sổ lưu bút
               </h2>
               <p
-                class="text-stone-500 text-xs sm:text-sm font-beVietnamPro italic mt-1"
+                class="text-stone-500 text-[11px] sm:text-xs md:text-sm font-beVietnamPro italic mt-0.5"
               >
                 Gửi những lời chúc mừng và nhắn nhủ yêu thương đến Quang Thọ
                 &amp; Thúy Hiền
               </p>
               <div
-                class="w-12 h-[1.5px] bg-[#A12F0C]/30 mt-2.5 mx-auto lg:mx-0"
+                class="w-10 h-[1.5px] bg-[#A12F0C]/30 mt-2 mx-auto md:mx-0"
               ></div>
             </div>
 
             <!-- Form -->
-            <form (ngSubmit)="submitWish()" class="space-y-3 font-beVietnamPro">
+            <form (ngSubmit)="submitWish()" class="space-y-2.5 font-beVietnamPro">
               <div>
                 <input
                   type="text"
@@ -83,43 +84,104 @@ import { ToastService } from "../../services/toast.service";
                   name="name"
                   placeholder="Tên của bạn (tối đa 160 ký tự) *"
                   required
-                  class="w-full h-10 sm:h-11 px-3.5 sm:px-4 rounded-xl border border-stone-300 placeholder-stone-400 text-stone-800 text-xs sm:text-sm focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all bg-stone-50/50 focus:bg-white shadow-inner"
+                  class="w-full h-9 sm:h-10 px-3 sm:px-3.5 rounded-xl border border-stone-300 placeholder-stone-400 text-stone-800 text-xs sm:text-sm focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all bg-stone-50/50 focus:bg-white shadow-inner"
                 />
               </div>
 
+              <!-- Textarea with Bottom-Right Lightbulb Icon Button -->
               <div class="relative">
                 <textarea
                   [(ngModel)]="content"
                   name="content"
-                  rows="3"
+                  rows="4"
                   placeholder="Nhập lời chúc của bạn (tối đa 3000 ký tự) *"
                   required
-                  class="w-full h-[85px] sm:h-[95px] p-3.5 rounded-xl border border-stone-300 resize-none placeholder-stone-400 text-stone-800 text-xs sm:text-sm focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all bg-stone-50/50 focus:bg-white shadow-inner"
+                  class="w-full h-[130px] sm:h-[155px] md:h-[175px] p-3 sm:p-3.5 pr-10 pb-9 rounded-2xl border border-stone-300 resize-none placeholder-stone-400 text-stone-800 text-xs sm:text-sm focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all bg-stone-50/50 focus:bg-white shadow-inner leading-relaxed"
                 >
                 </textarea>
-              </div>
 
-              <!-- Gợi ý lời chúc nhanh -->
-              <div class="space-y-1.5 pt-0.5">
-                <p class="text-[11px] text-stone-500 italic">Gợi ý lời chúc:</p>
-                <div class="flex flex-wrap gap-1.5">
+                <!-- Lightbulb Icon Button (Bottom-Right Inside Textarea) -->
+                <div class="absolute bottom-2.5 right-2.5 z-10">
                   <button
-                    *ngFor="let suggestion of wishSuggestions"
                     type="button"
-                    (click)="applySuggestion(suggestion)"
-                    class="text-[11px] sm:text-xs px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-[#F4DBCE]/60 hover:text-[#A12F0C] hover:border-[#A12F0C]/40 border border-stone-200 text-stone-700 transition-all text-left active:scale-95 shadow-2xs"
+                    (click)="toggleSuggestions($event)"
+                    class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center bg-amber-50 hover:bg-amber-100 text-amber-600 hover:text-amber-700 border border-amber-200/90 shadow-2xs transition-all active:scale-90 cursor-pointer"
+                    title="Gợi ý lời chúc mẫu"
+                    aria-label="Gợi ý lời chúc mẫu"
                   >
-                    {{ suggestion }}
+                    <!-- Glowing Lightbulb Icon -->
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M12 2C7.58 2 4 5.58 4 10c0 2.62 1.27 4.96 3.23 6.43.34.25.57.64.63 1.06L8.2 20c.09.56.58 1 1.15 1h5.3c.57 0 1.06-.44 1.15-1l.34-2.51c.06-.42.29-.81.63-1.06C18.73 14.96 20 12.62 20 10c0-4.42-3.58-8-8-8zm-2 20c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-1h-4v1z"
+                      />
+                    </svg>
                   </button>
+
+                  <!-- Suggestions Popover Menu (Right-Aligned Above Icon Button) -->
+                  <div
+                    *ngIf="isSuggestionsOpen"
+                    (click)="$event.stopPropagation()"
+                    class="absolute bottom-full right-0 mb-2 w-[85vw] max-w-[280px] sm:max-w-[340px] bg-white rounded-2xl shadow-2xl border border-[#F4DBCE] p-3 z-50 animate-photo-expand text-left"
+                  >
+                    <!-- Header with Title & Close button -->
+                    <div
+                      class="flex items-center justify-between pb-2 mb-2 border-b border-[#F4DBCE]/60"
+                    >
+                      <div
+                        class="flex items-center gap-1.5 text-xs font-semibold text-[#A12F0C] font-prata"
+                      >
+                        <span>💡 Chọn lời chúc mẫu</span>
+                      </div>
+                      <button
+                        type="button"
+                        (click)="isSuggestionsOpen = false"
+                        class="text-stone-400 hover:text-stone-700 p-0.5 cursor-pointer"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="w-3.5 h-3.5"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <!-- Suggestions List Items -->
+                    <div
+                      class="flex flex-col gap-1.5 max-h-56 overflow-y-auto no-scrollbar"
+                    >
+                      <button
+                        *ngFor="let suggestion of wishSuggestions"
+                        type="button"
+                        (click)="applySuggestion(suggestion)"
+                        class="text-left text-[11px] sm:text-xs p-2 rounded-xl hover:bg-[#F5E5DC]/60 text-stone-700 hover:text-[#A12F0C] transition-colors border border-transparent hover:border-[#F4DBCE] active:scale-98 leading-relaxed font-beVietnamPro cursor-pointer"
+                      >
+                        {{ suggestion }}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <!-- Submit Button Aligned to the Right -->
-              <div class="flex justify-end pt-1">
+              <div class="flex justify-end pt-0.5">
                 <button
                   type="submit"
                   [disabled]="!name.trim() || !content.trim() || isSubmitting"
-                  class="uppercase rounded-full text-white font-prata text-xs sm:text-sm tracking-wider min-w-[140px] sm:min-w-[160px] py-2.5 sm:py-3 px-6 sm:px-7 bg-[#A12F0C] hover:bg-[#852509] disabled:opacity-50 transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2"
+                  class="uppercase rounded-full text-white font-prata text-[11px] sm:text-xs md:text-sm tracking-wider min-w-[120px] sm:min-w-[140px] py-2 sm:py-2.5 px-5 sm:px-6 bg-[#A12F0C] hover:bg-[#852509] disabled:opacity-50 transition-all shadow-sm hover:shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <svg
                     *ngIf="!isSubmitting"
@@ -140,7 +202,7 @@ import { ToastService } from "../../services/toast.service";
             </form>
 
             <!-- Divider -->
-            <div class="my-5 w-full h-[1px] bg-stone-200"></div>
+            <div class="my-3 sm:my-4 w-full h-[1px] bg-stone-200"></div>
 
             <!-- Messages List (Classic Tile Style with Seamless Infinite Auto-Scroll & Hidden Scrollbar) -->
             <div
@@ -150,7 +212,7 @@ import { ToastService } from "../../services/toast.service";
               (touchstart)="pauseScroll()"
               (touchend)="resumeScroll()"
               (touchcancel)="resumeScroll()"
-              class="max-h-[240px] sm:max-h-[280px] overflow-y-auto text-start flex flex-col gap-4 pr-1 font-beVietnamPro no-scrollbar select-text cursor-default"
+              class="max-h-[250px] sm:max-h-[290px] md:max-h-[330px] overflow-y-auto text-start flex flex-col gap-3 pr-1 font-beVietnamPro no-scrollbar select-text cursor-default"
             >
               <div
                 *ngFor="let msg of loopedMessages; let idx = index"
@@ -190,14 +252,27 @@ export class GuestbookComponent implements AfterViewInit, OnDestroy {
   name = "";
   content = "";
   isSubmitting = false;
+  isSuggestionsOpen = false;
   private isPaused = false;
   private scrollInterval: any;
 
   wishSuggestions: string[] = [
-    "Chúc mừng hạnh phúc! Chúc hai bạn trăm năm hạnh phúc!",
-    "Chúc mừng ngày trọng đại tới hai bạn. Hạnh phúc bền lâu và trọn vẹn nhé!",
-    "Chúc mừng hạnh phúc hai bạn. Chúc hai bạn bên nhau đầu bạc răng long, sớm có thiên thần nhỏ nhé!",
+    "Chúc mừng hạnh phúc! Chúc hai bạn trăm năm hòa hợp, vẹn tròn yêu thương! 💕",
+    "Chúc mừng ngày trọng đại! Hạnh phúc bền lâu, trọn vẹn và an yên nhé! 🌸",
+    "Chúc hai bạn bên nhau đầu bạc răng long, sớm đón thiên thần nhỏ đáng yêu! 👶",
+    "Trăm năm tình viên mãn, bạc đầu nghĩa phu thê! Chúc hai bạn mãi ngọt ngào! 🥂",
+    "Mừng ngày chung đôi! Chúc tổ ấm nhỏ luôn ngập tràn tiếng cười và hạnh phúc! 💐",
   ];
+
+  @HostListener("document:click")
+  onDocumentClick() {
+    this.isSuggestionsOpen = false;
+  }
+
+  toggleSuggestions(event: Event) {
+    event.stopPropagation();
+    this.isSuggestionsOpen = !this.isSuggestionsOpen;
+  }
 
   get loopedMessages() {
     const msgs = this.guestbookService.messages();
@@ -214,6 +289,7 @@ export class GuestbookComponent implements AfterViewInit, OnDestroy {
 
   applySuggestion(suggestion: string) {
     this.content = suggestion;
+    this.isSuggestionsOpen = false;
   }
 
   private startAutoScroll() {

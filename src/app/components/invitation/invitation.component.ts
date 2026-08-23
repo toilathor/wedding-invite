@@ -6,8 +6,10 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  inject,
 } from "@angular/core";
 import { InvitationData } from "../../models/wedding-data.model";
+import { PageViewService } from "../../services/pageview.service";
 
 interface TimeLeft {
   days: number;
@@ -22,108 +24,108 @@ interface TimeLeft {
   imports: [CommonModule],
   template: `
     <section
-      class="relative bg-white grid py-16 md:py-24 lg:py-28 text-center overflow-hidden reveal"
+      class="relative bg-white grid py-4 sm:py-6 md:py-10 lg:py-14 text-center overflow-hidden reveal"
     >
       <!-- Title & Intro -->
       <div
-        class="text-[#2A1810] max-w-[1443px] md:mx-auto mx-[15px] mb-6 md:mb-10"
+        class="text-[#2A1810] max-w-[1443px] md:mx-auto mx-[15px] mb-3 sm:mb-6 md:mb-8"
       >
         <h2
-          class="text-[42px] md:text-[56px] leading-[60px] font-pinyonScript bg-transparent w-full text-[#A12F0C] mb-3"
+          class="text-[34px] sm:text-[44px] md:text-[56px] leading-tight font-pinyonScript bg-transparent w-full text-[#A12F0C] mb-2"
         >
           Trân trọng kính mời
         </h2>
         <div
-          class="text-sm md:text-base mt-2 font-beVietnamPro text-stone-700 max-w-2xl mx-auto leading-relaxed"
+          class="text-xs sm:text-sm md:text-base mt-1.5 font-beVietnamPro text-stone-700 max-w-2xl mx-auto leading-relaxed px-2"
           [innerHTML]="data.descriptionHtml"
         ></div>
       </div>
 
       <!-- Time, Date, Location & Countdown Banner Box -->
       <div
-        class="relative px-[15px] my-6 md:my-12 py-10 md:py-16 grid justify-center items-center bg-[#FBF7F5] text-[#A12F0C]"
+        class="relative px-3 sm:px-6 my-2 sm:my-4 md:my-6 py-4 sm:py-6 md:py-10 grid justify-center items-center bg-[#FBF7F5] text-[#A12F0C]"
       >
         <!-- Left & Right Ornaments -->
         <img
           src="/assets/images/templates/sangtrong/img/left.png"
           alt="Decor Left"
-          class="absolute left-0 top-0 w-[272px] h-[100%] hidden md:block pointer-events-none opacity-80"
+          class="absolute left-0 top-0 w-[180px] md:w-[272px] h-[100%] hidden md:block pointer-events-none opacity-80"
         />
         <img
           src="/assets/images/templates/sangtrong/8.png"
           alt="Decor Right"
-          class="absolute right-0 bottom-0 w-[272px] h-[100%] hidden md:block pointer-events-none opacity-80"
+          class="absolute right-0 bottom-0 w-[180px] md:w-[272px] h-[100%] hidden md:block pointer-events-none opacity-80"
         />
 
-        <div class="max-w-[1443px] mx-auto z-10">
-          <p class="text-xl md:text-[28px] leading-relaxed font-prata">
+        <div class="max-w-[1443px] mx-auto z-10 w-full">
+          <p class="text-base sm:text-xl md:text-[26px] leading-relaxed font-prata">
             {{ data.time }}
           </p>
 
           <div
-            class="flex space-x-[20px] md:space-x-[35px] text-[32px] md:text-[56px] items-center justify-center h-auto pt-8 pb-8 md:pt-10 md:pb-10 font-prata text-[#A12F0C]"
+            class="flex space-x-[12px] sm:space-x-[20px] md:space-x-[35px] text-[26px] sm:text-[34px] md:text-[52px] items-center justify-center h-auto pt-3 pb-3 sm:pt-4 sm:pb-4 md:pt-6 md:pb-6 font-prata text-[#A12F0C]"
           >
             <span class="leading-none">{{ data.day }}</span>
-            <div class="self-stretch w-[1.66px] bg-[#F4DBCE]"></div>
+            <div class="self-stretch w-[1.5px] bg-[#F4DBCE]"></div>
             <span class="leading-none">{{ data.month }}</span>
-            <div class="self-stretch w-[1.66px] bg-[#F4DBCE]"></div>
+            <div class="self-stretch w-[1.5px] bg-[#F4DBCE]"></div>
             <span class="leading-none">{{ data.year }}</span>
           </div>
 
           <p
-            class="text-xl md:text-[28px] leading-relaxed font-prata max-w-2xl mx-auto px-4"
+            class="text-sm sm:text-base md:text-xl leading-relaxed font-prata max-w-2xl mx-auto px-4"
           >
             {{ data.location }}
           </p>
 
           <!-- Countdown Timer -->
-          <div class="mt-8 md:mt-10 max-w-lg mx-auto">
-            <div class="grid grid-cols-4 gap-3 md:gap-5 px-2">
+          <div class="mt-4 sm:mt-6 md:mt-8 max-w-md mx-auto">
+            <div class="grid grid-cols-4 gap-2 sm:gap-3 md:gap-4 px-2">
               <div
-                class="bg-[#F4DBCE] rounded-2xl p-3 md:p-4 text-center shadow-sm"
+                class="bg-[#F4DBCE] rounded-xl sm:rounded-2xl p-2 sm:p-3 text-center shadow-xs"
               >
                 <span
-                  class="block text-2xl md:text-4xl font-bold font-prata text-[#A12F0C]"
+                  class="block text-lg sm:text-2xl md:text-3xl font-bold font-prata text-[#A12F0C]"
                   >{{ formatDigits(timeLeft.days) }}</span
                 >
                 <span
-                  class="text-[11px] md:text-xs uppercase tracking-wider text-[#A12F0C] font-semibold"
+                  class="text-[10px] sm:text-xs uppercase tracking-wider text-[#A12F0C] font-semibold"
                   >Ngày</span
                 >
               </div>
               <div
-                class="bg-[#F4DBCE] rounded-2xl p-3 md:p-4 text-center shadow-sm"
+                class="bg-[#F4DBCE] rounded-xl sm:rounded-2xl p-2 sm:p-3 text-center shadow-xs"
               >
                 <span
-                  class="block text-2xl md:text-4xl font-bold font-prata text-[#A12F0C]"
+                  class="block text-lg sm:text-2xl md:text-3xl font-bold font-prata text-[#A12F0C]"
                   >{{ formatDigits(timeLeft.hours) }}</span
                 >
                 <span
-                  class="text-[11px] md:text-xs uppercase tracking-wider text-[#A12F0C] font-semibold"
+                  class="text-[10px] sm:text-xs uppercase tracking-wider text-[#A12F0C] font-semibold"
                   >Giờ</span
                 >
               </div>
               <div
-                class="bg-[#F4DBCE] rounded-2xl p-3 md:p-4 text-center shadow-sm"
+                class="bg-[#F4DBCE] rounded-xl sm:rounded-2xl p-2 sm:p-3 text-center shadow-xs"
               >
                 <span
-                  class="block text-2xl md:text-4xl font-bold font-prata text-[#A12F0C]"
+                  class="block text-lg sm:text-2xl md:text-3xl font-bold font-prata text-[#A12F0C]"
                   >{{ formatDigits(timeLeft.minutes) }}</span
                 >
                 <span
-                  class="text-[11px] md:text-xs uppercase tracking-wider text-[#A12F0C] font-semibold"
+                  class="text-[10px] sm:text-xs uppercase tracking-wider text-[#A12F0C] font-semibold"
                   >Phút</span
                 >
               </div>
               <div
-                class="bg-[#F4DBCE] rounded-2xl p-3 md:p-4 text-center shadow-sm"
+                class="bg-[#F4DBCE] rounded-xl sm:rounded-2xl p-2 sm:p-3 text-center shadow-xs"
               >
                 <span
-                  class="block text-2xl md:text-4xl font-bold font-prata text-[#A12F0C]"
+                  class="block text-lg sm:text-2xl md:text-3xl font-bold font-prata text-[#A12F0C]"
                   >{{ formatDigits(timeLeft.seconds) }}</span
                 >
                 <span
-                  class="text-[11px] md:text-xs uppercase tracking-wider text-[#A12F0C] font-semibold"
+                  class="text-[10px] sm:text-xs uppercase tracking-wider text-[#A12F0C] font-semibold"
                   >Giây</span
                 >
               </div>
@@ -133,20 +135,20 @@ interface TimeLeft {
       </div>
 
       <!-- SubDescription & Action Buttons -->
-      <div>
+      <div class="px-3">
         <p
-          class="text-base pt-[30px] pb-10 md:pb-[56px] text-[#2A1810] mx-[15px] font-beVietnamPro italic"
+          class="text-xs sm:text-sm md:text-base pt-2 sm:pt-4 pb-4 sm:pb-6 md:pb-8 text-[#2A1810] mx-[15px] font-beVietnamPro italic"
         >
           {{ data.subDescription }}
         </p>
 
         <div
-          class="flex md:mb-10 flex-row justify-center items-center gap-4 md:gap-8 px-4 md:px-[15px] pb-10 md:pb-0"
+          class="flex flex-col sm:flex-row justify-center items-center gap-2.5 sm:gap-4 md:gap-6 px-4 max-w-lg mx-auto"
         >
           <button
             type="button"
             (click)="scrollToGuestbook()"
-            class="uppercase rounded-full text-white font-prata text-sm md:text-[18px] min-w-[180px] md:min-w-[250px] p-3 md:p-6 bg-[#A12F0C] hover:bg-[#852509] transition-all shadow-md active:scale-95"
+            class="w-full sm:w-auto uppercase rounded-full text-white font-prata text-xs sm:text-sm md:text-base px-6 py-3 md:px-8 md:py-4 bg-[#A12F0C] hover:bg-[#852509] transition-all shadow-md active:scale-95 whitespace-nowrap"
           >
             Gửi lời chúc
           </button>
@@ -154,7 +156,7 @@ interface TimeLeft {
             type="button"
             id="btn-confirm-attendance"
             (click)="onOpenRsvp.emit()"
-            class="uppercase rounded-full font-prata text-sm md:text-[18px] min-w-[180px] md:min-w-[250px] p-3 md:p-6 bg-[#F4DBCE] text-[#A12F0C] hover:bg-[#ebd0c1] transition-all shadow-sm active:scale-95"
+            class="w-full sm:w-auto uppercase rounded-full font-prata text-xs sm:text-sm md:text-base px-6 py-3 md:px-8 md:py-4 bg-[#F4DBCE] text-[#A12F0C] hover:bg-[#ebd0c1] transition-all shadow-sm active:scale-95 whitespace-nowrap"
           >
             Xác nhận tham dự
           </button>
@@ -166,6 +168,8 @@ interface TimeLeft {
 export class InvitationComponent implements OnInit, OnDestroy {
   @Input({ required: true }) data!: InvitationData;
   @Output() onOpenRsvp = new EventEmitter<void>();
+
+  private pageViewService = inject(PageViewService);
 
   timeLeft: TimeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
   private timerInterval: any;
@@ -205,9 +209,6 @@ export class InvitationComponent implements OnInit, OnDestroy {
   }
 
   scrollToGuestbook() {
-    const el = document.getElementById("sangtrong-message-id");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
+    this.pageViewService.goToPage(7);
   }
 }

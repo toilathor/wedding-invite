@@ -1,49 +1,87 @@
-<div class="min-h-screen flex flex-col bg-[#FBF7F5] selection:bg-[#A12F0C] selection:text-white">
+<div
+  #pageContainer
+  class="pageview-container bg-[#FBF7F5] selection:bg-[#A12F0C] selection:text-white"
+  (wheel)="pageViewService.handleWheel($event)"
+  (touchstart)="pageViewService.handleTouchStart($event)"
+  (touchmove)="pageViewService.handleTouchMove($event)"
+  (touchend)="pageViewService.handleTouchEnd($event)">
+
   <!-- Toast Notification System -->
   <app-toast></app-toast>
 
   <!-- 1. Hero / Banner -->
-  <app-banner [data]="weddingData.banner"></app-banner>
+  <div class="pageview-section" id="page-banner">
+    <app-banner [data]="weddingData.banner"></app-banner>
+  </div>
 
   <!-- 2. Invitation & Countdown -->
-  <app-invitation [data]="weddingData.invitation" (onOpenRsvp)="openRsvp()"></app-invitation>
+  <div class="pageview-section" id="page-invitation">
+    <app-invitation [data]="weddingData.invitation" (onOpenRsvp)="openRsvp()"></app-invitation>
+  </div>
 
   <!-- 3. Introduction (Groom & Bride) -->
-  <app-introduction [data]="weddingData.introduction"></app-introduction>
+  <div class="pageview-section" id="page-introduction">
+    <app-introduction [data]="weddingData.introduction"></app-introduction>
+  </div>
 
   <!-- 4. Story (Love Story) -->
-  <app-story [data]="weddingData.story"></app-story>
+  <div class="pageview-section" id="page-story">
+    <app-story [data]="weddingData.story"></app-story>
+  </div>
 
   <!-- 5. Timeline (Milestones) -->
-  <app-timeline [data]="weddingData.timeline"></app-timeline>
+  <div class="pageview-section" id="page-timeline">
+    <app-timeline [data]="weddingData.timeline"></app-timeline>
+  </div>
 
   <!-- 6. Wedding Events -->
-  <app-events [events]="weddingData.events"></app-events>
+  <div class="pageview-section relative z-30" id="page-events">
+    <app-events [events]="weddingData.events"></app-events>
+  </div>
 
   <!-- 7. Wedding Photo Album & Lightbox -->
-  <app-album [data]="weddingData.album"></app-album>
+  <div class="pageview-section relative z-10" id="page-album">
+    <app-album [data]="weddingData.album"></app-album>
+  </div>
 
   <!-- 8. Guestbook & Wishes -->
-  <app-guestbook></app-guestbook>
+  <div class="pageview-section" id="page-guestbook">
+    <app-guestbook></app-guestbook>
+  </div>
 
-  <!-- 9. Bank & Gift Registry -->
-  <app-bank-gift [data]="weddingData.bank"></app-bank-gift>
+  <!-- 9. Bank & Gift Registry + Footer -->
+  <div class="pageview-section flex flex-col justify-between" id="page-bank-gift">
+    <app-bank-gift [data]="weddingData.bank"></app-bank-gift>
 
-  <!-- Footer -->
-  <footer class="bg-[#2A1810] text-[#F4DBCE] py-12 px-4 text-center border-t border-[#F4DBCE]/20">
-    <div class="max-w-xl mx-auto space-y-4">
-      <h3 class="text-3xl md:text-4xl font-pinyon text-white">
-        Quang Thọ &amp; Thúy Hiền
-      </h3>
-      <p class="text-xs md:text-sm font-light text-[#F4DBCE]/80 tracking-widest uppercase">
-        28 . 11 . 2026 • Thank you for celebrating with us!
-      </p>
-      <div class="w-12 h-[1px] bg-[#F4DBCE]/30 mx-auto my-4"></div>
-      <p class="text-[11px] text-stone-400">
-        Thiệp cưới số • Made with love &amp; happiness ❤️
-      </p>
-    </div>
-  </footer>
+    <!-- Footer -->
+    <footer class="bg-[#2A1810] text-[#F4DBCE] pt-8 pb-20 sm:pt-10 sm:pb-16 md:py-10 px-8 sm:px-16 text-center border-t border-[#F4DBCE]/20 mt-auto relative z-10">
+      <div class="max-w-md mx-auto space-y-2 sm:space-y-2.5">
+        <h3 class="text-2xl sm:text-3xl md:text-4xl font-pinyon text-white">
+          Quang Thọ &amp; Thúy Hiền
+        </h3>
+        <p class="text-[11px] sm:text-xs md:text-sm font-light text-[#F4DBCE]/80 tracking-widest uppercase">
+          28 . 11 . 2026 • Thank you for celebrating with us!
+        </p>
+        <div class="w-12 h-[1px] bg-[#F4DBCE]/30 mx-auto my-2"></div>
+        <p class="text-[10px] sm:text-[11px] text-stone-400">
+          Thiệp cưới số • Made with love &amp; happiness ❤️
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Floating Page Indicator Dots (Mobile & Desktop) -->
+  <nav class="pageview-indicator flex" aria-label="Điều hướng trang">
+    <button
+      *ngFor="let page of pages; let i = index"
+      type="button"
+      (click)="goToPage(i)"
+      class="pageview-dot"
+      [class.active]="pageViewService.currentPageIndex() === i"
+      [title]="page.title"
+      [attr.aria-label]="page.title">
+    </button>
+  </nav>
 
   <!-- Floating Audio Player (Bottom-Left) -->
   <app-music-player></app-music-player>

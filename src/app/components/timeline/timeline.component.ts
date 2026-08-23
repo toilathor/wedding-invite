@@ -7,56 +7,62 @@ import { TimelineData } from '../../models/wedding-data.model';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <section class="relative grid text-center bg-white overflow-x-hidden py-16 md:py-24 reveal">
-      <div class="max-w-[1443px] mx-auto w-full px-[15px]">
-        <!-- Title -->
-        <h2 class="text-center text-[48px] md:text-[72px] leading-[40px] md:leading-[90px] font-pinyonScript md:mb-10 px-4 text-[#A12F0C] reveal">
-          {{ data.mainTitle }}
-        </h2>
+    <section class="relative bg-white overflow-hidden py-12 md:py-20 lg:py-24 reveal">
+      <div class="max-w-[1443px] mx-auto w-full px-4 sm:px-6 md:px-8">
+        <!-- Section Header -->
+        <div class="text-center mb-8 sm:mb-12 md:mb-16">
+          <p class="text-xs sm:text-sm font-prata tracking-[0.25em] text-[#A12F0C]/80 uppercase">
+            Hành trình yêu thương
+          </p>
+          <h2 class="text-center text-[44px] sm:text-[56px] md:text-[72px] leading-tight font-pinyonScript text-[#A12F0C] mt-1">
+            {{ data.mainTitle }}
+          </h2>
+          <div class="w-16 h-[1.5px] bg-[#A12F0C]/30 mx-auto mt-2"></div>
+        </div>
 
-        <!-- 3 Cards Grid -->
-        <div class="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-[30px] gap-y-12 w-full">
+        <!-- 3 Cards Grid (Stacked on Mobile, 3-Column on Desktop) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-y-14 md:gap-y-0 md:gap-x-6 lg:gap-x-8 max-w-5xl mx-auto">
           <div
             *ngFor="let item of data.milestone; let idx = index"
             [ngClass]="'reveal delay-' + ((idx + 1) * 100)"
-            class="relative flex flex-col max-w-[380px] md:max-w-none mx-auto w-full rounded-t-full overflow-hidden shadow-md">
-
-            <!-- Top: Arched Image optimized for mobile and desktop -->
-            <div class="w-full relative h-[340px] sm:h-[380px] md:h-[385px] overflow-hidden bg-stone-50">
+            class="relative flex flex-col max-w-[340px] md:max-w-none mx-auto w-full rounded-t-full overflow-hidden shadow-md bg-white border border-stone-100 hover:shadow-xl transition-all duration-500 group"
+          >
+            <!-- Top Arched Image -->
+            <div class="w-full relative h-[260px] sm:h-[300px] md:h-[240px] lg:h-[300px] overflow-hidden bg-stone-50">
               <img
                 [src]="item.picture"
                 [alt]="item.title"
-                class="w-full h-full object-cover"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 [style.object-position]="item.imagePosition || '50% 20%'"
               />
             </div>
 
-            <!-- Bottom: Details Box with Flower on Top -->
-            <div class="relative bg-[#FBF7F5] pt-14 px-6 md:px-8 pb-8 md:pb-10 flex flex-col justify-between flex-1">
+            <!-- Bottom Details Box with Flower on Top -->
+            <div class="relative bg-[#FBF7F5] pt-10 sm:pt-12 px-5 sm:px-6 pb-6 sm:pb-8 flex flex-col justify-between flex-1">
               <!-- Overlay Flower Decor -->
-              <div class="absolute -top-16 left-0 right-0 flex justify-center items-center pointer-events-none z-20">
+              <div class="absolute -top-12 left-0 right-0 flex justify-center items-center pointer-events-none z-20">
                 <img
                   src="/assets/images/templates/sangtrong/1.png"
                   alt="Milestone Decor"
-                  class="w-[160px] h-[140px] md:w-[210px] md:h-[160px] object-contain"
+                  class="w-[130px] h-[110px] md:w-[140px] md:h-[120px] object-contain"
                 />
               </div>
 
               <div>
                 <!-- Title -->
-                <h3 class="text-[32px] md:text-[40px] font-pinyonScript text-[#A12F0C] leading-tight mb-3">
+                <h3 class="text-[28px] sm:text-[34px] md:text-[36px] font-pinyonScript text-[#A12F0C] leading-tight mb-2 text-center">
                   {{ item.title }}
                 </h3>
 
-                <!-- Content with softer, warm text color -->
-                <p class="text-sm md:text-[15px] text-stone-600 font-beVietnamPro leading-relaxed font-light line-clamp-5 mb-6 tracking-wide">
+                <!-- Content -->
+                <p class="text-xs sm:text-sm text-stone-600 font-beVietnamPro leading-relaxed font-light mb-6 tracking-wide text-center">
                   {{ item.content }}
                 </p>
               </div>
 
               <!-- Date Split -->
-              <div class="flex justify-center items-center pt-4 border-t border-[#F4DBCE]/60">
-                <div class="flex space-x-[12px] md:space-x-[28px] text-[26px] md:text-[34px] items-center font-prata text-[#F4DBCE] leading-none">
+              <div class="flex justify-center items-center pt-3.5 border-t border-[#F4DBCE]/60">
+                <div class="flex space-x-4 sm:space-x-5 text-[22px] sm:text-[26px] md:text-[28px] items-center font-prata text-[#F4DBCE] leading-none">
                   <span class="text-[#A12F0C] font-normal">{{ item.day }}</span>
                   <div class="self-stretch w-[1.5px] bg-[#A12F0C]/20"></div>
                   <span class="text-[#A12F0C] font-normal">{{ item.month }}</span>

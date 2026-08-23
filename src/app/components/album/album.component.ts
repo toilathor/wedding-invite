@@ -6,8 +6,10 @@ import {
   Input,
   OnDestroy,
   ViewChild,
+  inject,
 } from "@angular/core";
 import { AlbumData } from "../../models/wedding-data.model";
+import { PageViewService } from "../../services/pageview.service";
 
 @Component({
   selector: "app-album",
@@ -17,21 +19,21 @@ import { AlbumData } from "../../models/wedding-data.model";
     <!-- 1. Page Gallery Section -->
     <section
       id="wedding-album-section"
-      class="relative max-w-[1443px] mx-auto py-12 md:py-[72px] px-4 md:px-[15px] reveal"
+      class="relative max-w-[1443px] mx-auto py-4 sm:py-6 md:py-10 lg:py-12 px-3 sm:px-4 md:px-[15px] reveal"
     >
       <!-- Title -->
       <h2
-        class="text-center text-[48px] md:text-[72px] leading-[60px] md:leading-[90px] font-pinyonScript text-[#A12F0C] mb-6 md:mb-10"
+        class="text-center text-[34px] sm:text-[44px] md:text-[64px] leading-tight md:leading-[80px] font-pinyonScript text-[#A12F0C] mb-3 sm:mb-4 md:mb-6"
       >
         {{ data.title }}
       </h2>
 
       <!-- Gallery Grid: Initial Photos (Always Visible) -->
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5">
         <div
           *ngFor="let img of initialAlbums; let idx = index"
           (click)="openLightbox(idx)"
-          class="group relative aspect-[3/4] md:aspect-[4/5] rounded-2xl md:rounded-[24px] overflow-hidden shadow-md hover:shadow-2xl cursor-pointer transition-all duration-300 bg-stone-100"
+          class="group relative aspect-[3/4] md:aspect-[4/5] rounded-xl sm:rounded-2xl md:rounded-[24px] overflow-hidden shadow-sm hover:shadow-2xl cursor-pointer transition-all duration-300 bg-stone-100"
         >
           <img
             [src]="img"
@@ -42,21 +44,21 @@ import { AlbumData } from "../../models/wedding-data.model";
 
           <!-- Hover Overlay -->
           <div
-            class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-6 pointer-events-none"
+            class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 sm:p-4 md:p-6 pointer-events-none"
           >
             <div
               class="flex items-center justify-between text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300"
             >
               <span
-                class="text-xs md:text-sm font-prata tracking-wider uppercase"
+                class="text-[11px] sm:text-xs md:text-sm font-prata tracking-wider uppercase"
                 >Xem ảnh</span
               >
               <div
-                class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-[#A12F0C] shadow-lg"
+                class="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-[#A12F0C] shadow-lg"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="w-4 h-4 md:w-5 md:h-5"
+                  class="w-3.5 h-3.5 md:w-5 md:h-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -81,17 +83,17 @@ import { AlbumData } from "../../models/wedding-data.model";
         [ngStyle]="{
           'grid-template-rows': showAll ? '1fr' : '0fr',
           opacity: showAll ? '1' : '0',
-          'margin-top': showAll ? '0.75rem' : '0px',
+          'margin-top': showAll ? '0.6rem' : '0px',
         }"
       >
         <div class="overflow-hidden min-h-0">
           <div
-            class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 pt-0 md:pt-3"
+            class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5 pt-0 md:pt-2"
           >
             <div
               *ngFor="let img of extraAlbums; let i = index"
               (click)="openLightbox(initialCount + i)"
-              class="group relative aspect-[3/4] md:aspect-[4/5] rounded-2xl md:rounded-[24px] overflow-hidden shadow-md hover:shadow-2xl cursor-pointer transition-all duration-500 ease-out bg-stone-100 transform"
+              class="group relative aspect-[3/4] md:aspect-[4/5] rounded-xl sm:rounded-2xl md:rounded-[24px] overflow-hidden shadow-sm hover:shadow-2xl cursor-pointer transition-all duration-500 ease-out bg-stone-100 transform"
               [style.transform]="
                 showAll
                   ? 'translateY(0) scale(1)'
@@ -108,21 +110,21 @@ import { AlbumData } from "../../models/wedding-data.model";
 
               <!-- Hover Overlay -->
               <div
-                class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-6 pointer-events-none"
+                class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 sm:p-4 md:p-6 pointer-events-none"
               >
                 <div
                   class="flex items-center justify-between text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300"
                 >
                   <span
-                    class="text-xs md:text-sm font-prata tracking-wider uppercase"
+                    class="text-[11px] sm:text-xs md:text-sm font-prata tracking-wider uppercase"
                     >Xem ảnh</span
                   >
                   <div
-                    class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-[#A12F0C] shadow-lg"
+                    class="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-[#A12F0C] shadow-lg"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="w-4 h-4 md:w-5 md:h-5"
+                      class="w-3.5 h-3.5 md:w-5 md:h-5"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -144,18 +146,18 @@ import { AlbumData } from "../../models/wedding-data.model";
 
       <!-- Expand / Collapse Button (No count badge, smooth animated arrow) -->
       <div
-        class="flex justify-center mt-8 md:mt-[60px]"
+        class="flex justify-center mt-4 sm:mt-6 md:mt-10"
         *ngIf="data.albums.length > initialCount"
       >
         <button
           type="button"
           (click)="toggleExpand()"
-          class="group uppercase rounded-full text-white font-prata text-xs sm:text-sm tracking-wider px-8 py-3.5 md:py-4 bg-[#A12F0C] hover:bg-[#852509] transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2.5"
+          class="group uppercase rounded-full text-white font-prata text-xs sm:text-sm tracking-wider px-6 sm:px-8 py-2.5 sm:py-3.5 md:py-4 bg-[#A12F0C] hover:bg-[#852509] transition-all shadow-sm hover:shadow-lg active:scale-95 flex items-center gap-2"
         >
           <span>{{ showAll ? "Thu gọn album" : "Xem thêm ảnh" }}</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="w-4 h-4 transition-transform duration-500 ease-out"
+            class="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-500 ease-out"
             [class.rotate-180]="showAll"
             fill="none"
             viewBox="0 0 24 24"
@@ -446,7 +448,9 @@ export class AlbumComponent implements OnDestroy {
   @Input({ required: true }) data!: AlbumData;
   @ViewChild("thumbnailStrip") thumbnailStrip?: ElementRef<HTMLDivElement>;
 
-  initialCount = 6;
+  private pageViewService = inject(PageViewService);
+
+  initialCount = 8;
   showAll = false;
   lightboxOpen = false;
   currentIndex = 0;
@@ -490,6 +494,7 @@ export class AlbumComponent implements OnDestroy {
     this.currentIndex = index;
     this.isZoomed = false;
     this.lightboxOpen = true;
+    this.pageViewService.setLocked(true);
     document.body.style.overflow = "hidden";
     this.preloadAdjacentImages();
     setTimeout(() => this.scrollThumbIntoView(), 80);
@@ -499,6 +504,7 @@ export class AlbumComponent implements OnDestroy {
     this.lightboxOpen = false;
     this.isZoomed = false;
     this.stopSlideshow();
+    this.pageViewService.setLocked(false);
     document.body.style.overflow = "";
   }
 
@@ -657,6 +663,7 @@ export class AlbumComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.stopSlideshow();
+    this.pageViewService.setLocked(false);
     document.body.style.overflow = "";
   }
 }
