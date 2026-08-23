@@ -8,40 +8,41 @@ import { StoryData } from "../../models/wedding-data.model";
   imports: [CommonModule],
   template: `
     <section
-      class="relative grid text-center bg-[#FBF7F5] overflow-hidden pb-0 reveal"
+      class="relative grid text-center bg-[#FBF7F5] overflow-visible pt-4 sm:pt-6 md:pt-10 pb-0 reveal"
     >
-      <!-- Watermark on Desktop -->
+      <!-- Watermark Background Labels on Desktop (Using vertical writing mode for perfect bottom-left placement) -->
       <div
-        class="hidden md:block uppercase absolute top-1/3 -left-[335px] font-prata rotate-90 text-[110px] text-[#F4DBCE] opacity-80 pointer-events-none select-none"
+        class="hidden md:block uppercase absolute top-1/3 -left-[335px] font-prata rotate-90 text-[110px]"
+        style="color: rgb(244, 219, 206);"
       >
         Love story
       </div>
 
       <div
-        class="max-w-[1443px] mx-auto pt-3 sm:pt-6 md:pt-10 w-full px-4 md:px-[15px]"
+        class="max-w-[1443px] mx-auto pt-2 sm:pt-4 md:pt-6 pb-0 w-full px-4 md:px-[15px] z-10"
       >
         <!-- Title -->
         <h2
-          class="text-center text-[34px] sm:text-[46px] md:text-[64px] leading-tight md:leading-[80px] font-pinyonScript md:mb-3 px-4 text-[#A12F0C] reveal delay-100"
+          class="text-center text-[36px] sm:text-[48px] md:text-[68px] leading-tight md:leading-[84px] font-pinyonScript md:mb-3 px-4 text-[#A12F0C] reveal delay-100"
         >
           {{ data.title }}
         </h2>
 
         <!-- Content (Soft, non-bold, elegant typography) -->
-        <div class="w-full max-w-[760px] mx-auto px-2 sm:px-4 reveal delay-200">
+        <div class="w-full max-w-[820px] mx-auto px-2 sm:px-4 reveal delay-200">
           <div
-            class="text-xs sm:text-sm md:text-base font-light font-beVietnamPro text-stone-700 leading-relaxed tracking-wide"
+            class="text-xs sm:text-sm md:text-base lg:text-lg font-light font-beVietnamPro text-stone-700 leading-relaxed tracking-wide"
             [innerHTML]="data.contentHtml"
           ></div>
         </div>
 
-        <!-- Arch Frame Photo with Flower Decor - Flush to Bottom -->
+        <!-- Arch Frame Photo with Flower Decor - Flush to Bottom Edge -->
         <div
-          class="relative mt-4 sm:mt-6 md:mt-8 max-w-[280px] sm:max-w-[380px] md:max-w-[580px] lg:max-w-[640px] h-[250px] sm:h-[340px] md:h-[420px] lg:h-[480px] px-[10px] mx-auto mb-0 reveal delay-300"
+          class="relative mt-4 sm:mt-6 md:mt-8 max-w-[320px] sm:max-w-[420px] md:max-w-[660px] lg:max-w-[740px] h-[280px] sm:h-[380px] md:h-[480px] lg:h-[560px] px-[10px] mx-auto mb-0 reveal delay-300 overflow-visible"
         >
-          <!-- Main Image Frame -->
+          <!-- Main Image Frame (Aligned flush to bottom 0) -->
           <div
-            class="z-30 absolute left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-3 w-full h-full max-w-[260px] sm:max-w-[360px] md:max-w-none border border-[#A12F0C] rounded-tl-[160px] rounded-tr-[160px] md:rounded-tl-[300px] md:rounded-tr-[300px] overflow-hidden bg-white shadow-xl"
+            class="z-30 absolute bottom-0 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-3 w-full h-full max-w-[300px] sm:max-w-[400px] md:max-w-none border border-b-0 border-[#A12F0C] rounded-tl-[160px] rounded-tr-[160px] md:rounded-tl-[320px] md:rounded-tr-[320px] overflow-hidden bg-white shadow-xl"
           >
             <img
               [src]="data.image"
@@ -53,7 +54,7 @@ import { StoryData } from "../../models/wedding-data.model";
 
           <!-- Secondary Arched Border Frame -->
           <div
-            class="absolute bg-transparent left-1/2 -translate-x-1/2 md:left-[12px] md:translate-x-0 top-0 z-20 border-r border-[#A12F0C] rounded-tl-[160px] rounded-tr-[160px] md:rounded-tl-[300px] md:rounded-tr-[300px] w-full max-w-[260px] sm:max-w-[360px] md:max-w-full h-full pointer-events-none"
+            class="absolute bg-transparent bottom-0 left-1/2 -translate-x-1/2 md:left-[12px] md:translate-x-0 top-0 z-20 border-r border-[#A12F0C] rounded-tl-[160px] rounded-tr-[160px] md:rounded-tl-[320px] md:rounded-tr-[320px] w-full max-w-[300px] sm:max-w-[400px] md:max-w-full h-full pointer-events-none"
           ></div>
 
           <!-- Flower Decor Ornament -->

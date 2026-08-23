@@ -15,34 +15,40 @@ import { WeddingEventItem } from "../../models/wedding-data.model";
   `],
   template: `
     <section
-      class="relative grid py-6 md:py-10 lg:py-12 pb-14 sm:pb-16 md:pb-12 text-center bg-[#FBF7F5] overflow-visible reveal"
+      class="relative grid pt-0 pb-16 sm:pb-20 md:pb-16 text-center bg-[#FBF7F5] overflow-visible reveal"
     >
       <!-- Side Corner Decorations -->
       <img
         src="/assets/images/templates/sangtrong/img/left.png"
         alt="Ornament Left"
-        class="absolute -top-0 -left-0 md:w-[240px] md:h-[300px] w-[160px] h-[170px] pointer-events-none"
+        class="absolute top-0 left-0 md:w-[280px] md:h-[340px] lg:w-[340px] lg:h-[400px] w-[170px] h-[180px] pointer-events-none opacity-85 z-0"
       />
       <img
         src="/assets/images/templates/sangtrong/img/right.png"
         alt="Ornament Right"
-        class="absolute -bottom-0 -right-0 md:w-[240px] md:h-[300px] w-[160px] h-[170px] pointer-events-none"
+        class="absolute -bottom-0 -right-0 md:w-[260px] md:h-[320px] lg:w-[320px] lg:h-[380px] w-[160px] h-[170px] pointer-events-none opacity-85"
       />
 
       <div
-        class="max-w-[1443px] mx-auto py-2 md:py-4 w-full z-10 px-4 md:px-[15px]"
+        class="max-w-[1443px] mx-auto py-2 md:py-6 lg:py-8 w-full z-10 px-4 md:px-8 lg:px-12"
       >
         <!-- Title -->
         <h2
-          class="text-center text-[34px] sm:text-[44px] md:text-[58px] md:leading-[70px] font-pinyonScript mb-3 sm:mb-6 md:mb-8 text-[#A12F0C] reveal"
+          class="text-center text-[34px] sm:text-[44px] md:text-[58px] lg:text-[70px] md:leading-[70px] font-pinyonScript mb-4 sm:mb-8 md:mb-12 lg:mb-16 text-[#A12F0C] reveal"
         >
           Sự kiện cưới
         </h2>
 
         <!-- Events List -->
-        <div class="flex flex-col relative max-w-5xl mx-auto w-full">
+        <div class="flex flex-col relative max-w-6xl mx-auto w-full">
+          <!-- Continuous Connecting Line on Desktop (Centered behind badges) -->
+          <!-- Top calculation: icon height (95px) + gap (20px) + half badge height (~24px) = ~139px -->
           <div
-            class="flex flex-col md:flex-row relative gap-10 md:gap-0 justify-evenly z-10"
+            class="hidden md:block absolute left-[15%] right-[15%] h-[2px] bg-[#A12F0C] top-[139px] z-0 pointer-events-none"
+          ></div>
+
+          <div
+            class="flex flex-col md:flex-row relative gap-10 md:gap-4 lg:gap-8 justify-evenly z-10"
           >
             <div
               *ngFor="let item of events; let idx = index"
@@ -61,26 +67,8 @@ import { WeddingEventItem } from "../../models/wedding-data.model";
                 />
               </div>
 
-              <!-- Event Title Badge with Center-Aligned Connecting Line on Desktop -->
+              <!-- Event Title Badge -->
               <div class="w-full relative flex justify-center items-center">
-                <!-- Segment 1: From center of 1st badge to right with overlap -->
-                <div
-                  *ngIf="idx === 0"
-                  class="hidden md:block absolute left-1/2 -right-1 h-[2px] bg-[#A12F0C] top-1/2 -translate-y-1/2 z-0 pointer-events-none"
-                ></div>
-
-                <!-- Segment 2: Across entire middle column with overlap on both ends -->
-                <div
-                  *ngIf="idx === 1"
-                  class="hidden md:block absolute -left-1 -right-1 h-[2px] bg-[#A12F0C] top-1/2 -translate-y-1/2 z-0 pointer-events-none"
-                ></div>
-
-                <!-- Segment 3: From left with overlap to center of 3rd badge -->
-                <div
-                  *ngIf="idx === 2"
-                  class="hidden md:block absolute -left-1 right-1/2 h-[2px] bg-[#A12F0C] top-1/2 -translate-y-1/2 z-0 pointer-events-none"
-                ></div>
-
                 <!-- Badge Button -->
                 <div
                   class="relative z-10 uppercase rounded-full text-white font-prata text-xs sm:text-sm md:text-base min-w-[160px] sm:min-w-[180px] md:min-w-[190px] lg:min-w-[230px] px-4 sm:px-5 py-2.5 sm:py-3 md:py-3.5 bg-[#A12F0C] shadow-md text-center"

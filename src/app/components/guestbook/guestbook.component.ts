@@ -20,7 +20,7 @@ import { ToastService } from "../../services/toast.service";
   template: `
     <section
       id="sangtrong-message-id"
-      class="relative bg-white overflow-hidden py-6 md:py-10 lg:py-12 px-4 sm:px-6 md:px-10 reveal"
+      class="relative bg-white overflow-hidden py-8 sm:py-10 md:py-14 lg:py-16 px-4 sm:px-6 md:px-10 reveal"
     >
       <!-- Top Left Floral Decor -->
       <img

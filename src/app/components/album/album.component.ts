@@ -19,7 +19,7 @@ import { PageViewService } from "../../services/pageview.service";
     <!-- 1. Page Gallery Section -->
     <section
       id="wedding-album-section"
-      class="relative max-w-[1443px] mx-auto py-4 sm:py-6 md:py-10 lg:py-12 px-3 sm:px-4 md:px-[15px] reveal"
+      class="relative max-w-[1443px] mx-auto py-8 sm:py-10 md:py-14 lg:py-16 px-4 sm:px-6 md:px-8 reveal"
     >
       <!-- Title -->
       <h2
@@ -28,11 +28,12 @@ import { PageViewService } from "../../services/pageview.service";
         {{ data.title }}
       </h2>
 
-      <!-- Gallery Grid: Initial Photos (Always Visible) -->
+      <!-- Gallery Grid: Initial Photos (4 on Mobile, 8 on Desktop when collapsed) -->
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5">
         <div
           *ngFor="let img of initialAlbums; let idx = index"
           (click)="openLightbox(idx)"
+          [ngClass]="idx >= 4 ? (showAll ? 'block' : 'hidden md:block') : 'block'"
           class="group relative aspect-[3/4] md:aspect-[4/5] rounded-xl sm:rounded-2xl md:rounded-[24px] overflow-hidden shadow-sm hover:shadow-2xl cursor-pointer transition-all duration-300 bg-stone-100"
         >
           <img
@@ -144,15 +145,16 @@ import { PageViewService } from "../../services/pageview.service";
         </div>
       </div>
 
-      <!-- Expand / Collapse Button (No count badge, smooth animated arrow) -->
+      <!-- Expand / Collapse Button (Shows on mobile when > 4 photos, on desktop when > initialCount) -->
       <div
         class="flex justify-center mt-4 sm:mt-6 md:mt-10"
-        *ngIf="data.albums.length > initialCount"
+        *ngIf="data.albums.length > 4"
+        [ngClass]="{ 'md:hidden': data.albums.length <= initialCount }"
       >
         <button
           type="button"
           (click)="toggleExpand()"
-          class="group uppercase rounded-full text-white font-prata text-xs sm:text-sm tracking-wider px-6 sm:px-8 py-2.5 sm:py-3.5 md:py-4 bg-[#A12F0C] hover:bg-[#852509] transition-all shadow-sm hover:shadow-lg active:scale-95 flex items-center gap-2"
+          class="group uppercase rounded-full text-white font-prata text-xs sm:text-sm tracking-wider px-6 sm:px-8 py-2.5 sm:py-3.5 md:py-4 bg-[#A12F0C] hover:bg-[#852509] transition-all shadow-sm hover:shadow-lg active:scale-95 flex items-center gap-2 cursor-pointer"
         >
           <span>{{ showAll ? "Thu gọn album" : "Xem thêm ảnh" }}</span>
           <svg
