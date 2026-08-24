@@ -98,6 +98,12 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   }
 
   private updateActiveSectionOnScroll() {
+    // Tạm dừng cập nhật active section khi đang nhập liệu để tránh nhảy trạng thái khi bàn phím bật
+    const activeEl = document.activeElement;
+    if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
+      return;
+    }
+
     const sections = Array.from(
       document.querySelectorAll<HTMLElement>(".pageview-section"),
     );

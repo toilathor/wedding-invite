@@ -19,7 +19,7 @@ import { PageViewService } from "../../services/pageview.service";
     <!-- 1. Page Gallery Section -->
     <section
       id="wedding-album-section"
-      class="relative max-w-[1443px] w-full mx-auto min-h-screen lg:h-screen flex flex-col justify-center py-6 sm:py-8 md:py-10 lg:py-12 px-4 sm:px-6 md:px-8 reveal"
+      class="relative max-w-[1443px] w-full mx-auto min-h-[100lvh] lg:h-screen flex flex-col justify-center py-6 sm:py-8 md:py-10 lg:py-12 px-4 sm:px-6 md:px-8 reveal"
     >
       <!-- Title -->
       <h2
@@ -29,12 +29,12 @@ import { PageViewService } from "../../services/pageview.service";
       </h2>
 
       <!-- Gallery Grid: Initial Photos (4 on Mobile, 8 on Desktop when collapsed) -->
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-3.5 lg:gap-4 max-h-[70vh] overflow-y-auto no-scrollbar py-1">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-3.5 lg:gap-4 max-h-none md:max-h-[70vh] overflow-y-auto no-scrollbar py-1">
         <div
           *ngFor="let img of initialAlbums; let idx = index"
           (click)="openLightbox(idx)"
           [ngClass]="idx >= 4 ? (showAll ? 'block' : 'hidden md:block') : 'block'"
-          class="group relative aspect-[3/4] md:aspect-[4/5] max-h-[28vh] md:max-h-[32vh] rounded-xl sm:rounded-2xl md:rounded-[20px] overflow-hidden shadow-sm hover:shadow-2xl cursor-pointer transition-all duration-300 bg-stone-100 mx-auto w-full"
+          class="group relative aspect-[3/4] md:aspect-[4/5] max-h-none md:max-h-[32vh] rounded-xl sm:rounded-2xl md:rounded-[20px] overflow-hidden shadow-sm hover:shadow-2xl cursor-pointer transition-all duration-300 bg-stone-100 mx-auto w-full"
         >
           <img
             [src]="img"
@@ -179,7 +179,7 @@ import { PageViewService } from "../../services/pageview.service";
     <!-- 2. Ultra-Smooth Lightbox Modal (Placed outside section to avoid transform/reveal container bugs) -->
     <div
       *ngIf="lightboxOpen"
-      class="fixed inset-0 z-[999999] w-screen h-[100dvh] bg-black/95 backdrop-blur-xl flex flex-col justify-between items-center select-none overflow-hidden"
+      class="fixed inset-0 z-[999999] w-screen h-[100lvh] bg-black/95 backdrop-blur-xl flex flex-col justify-between items-center select-none overflow-hidden"
       role="dialog"
       aria-modal="true"
       aria-label="Xem ảnh cưới"

@@ -101,7 +101,7 @@ interface GuestOption {
                 name="rsvpName"
                 placeholder="Nhập họ và tên của bạn..."
                 required
-                class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#F4DBCE] text-stone-800 text-sm focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all shadow-inner font-beVietnamPro"
+                class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#F4DBCE] text-stone-800 text-[16px] sm:text-sm focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all shadow-inner font-beVietnamPro"
               />
             </div>
 
@@ -123,7 +123,7 @@ interface GuestOption {
                 placeholder="VD: 0912345678 (10 số)..."
                 required
                 [ngClass]="phoneError ? 'border-red-500 focus:border-red-600 focus:ring-red-500' : 'border-[#F4DBCE] focus:border-[#A12F0C] focus:ring-[#A12F0C]'"
-                class="w-full px-4 py-2.5 rounded-xl bg-white border text-stone-800 text-sm focus:outline-none focus:ring-1 transition-all shadow-inner font-beVietnamPro"
+                class="w-full px-4 py-2.5 rounded-xl bg-white border text-stone-800 text-[16px] sm:text-sm focus:outline-none focus:ring-1 transition-all shadow-inner font-beVietnamPro"
               />
               <p *ngIf="phoneError" class="text-[11px] text-red-600 font-beVietnamPro mt-1 flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
@@ -260,7 +260,7 @@ interface GuestOption {
                 name="rsvpNote"
                 rows="2"
                 [placeholder]="isAttending ? 'Nhập lời nhắn hoặc lưu ý...' : 'Gửi lời chúc mừng hạnh phúc đến hai bạn...'"
-                class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#F4DBCE] text-stone-800 text-sm focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all resize-none shadow-inner font-beVietnamPro"></textarea>
+                class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#F4DBCE] text-stone-800 text-[16px] sm:text-sm focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all resize-none shadow-inner font-beVietnamPro"></textarea>
             </div>
 
             <!-- Submit Button -->

@@ -111,6 +111,28 @@
     color: #333333;
     font-family: "BeVietnamPro", sans-serif;
   }
+
+  /* Prevent automatic iOS Safari / Mobile browser zoom on form focus */
+  input[type="text"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="email"],
+  input[type="password"],
+  textarea,
+  select {
+    font-size: 16px;
+  }
+  @media (min-width: 640px) {
+    input[type="text"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="email"],
+    input[type="password"],
+    textarea,
+    select {
+      font-size: 0.875rem;
+    }
+  }
 }
 
 /* =========================================================

@@ -21,7 +21,7 @@ import { ToastService } from "../../services/toast.service";
   template: `
     <section
       id="sangtrong-message-id"
-      class="relative bg-white overflow-hidden min-h-screen lg:h-screen flex items-center py-10 sm:py-14 md:py-16 px-4 sm:px-6 md:px-10 reveal"
+      class="relative bg-white overflow-hidden min-h-[100lvh] lg:h-screen flex items-center py-8 sm:py-12 md:py-16 px-4 sm:px-6 md:px-10 reveal"
     >
       <!-- Top Left Floral Decor -->
       <img
@@ -41,7 +41,7 @@ import { ToastService } from "../../services/toast.service";
       >
         <!-- 2-Column Responsive Layout: Left (LOVE Ladder Illustration) & Right (Guestbook Form & Wishes) -->
         <div
-          class="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 md:gap-8 lg:gap-10 items-center h-full max-h-[90vh]"
+          class="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 md:gap-8 lg:gap-10 items-center h-full max-h-none md:max-h-[90vh]"
         >
           <!-- Left Column: Romantic LOVE Ladder Illustration -->
           <div
@@ -58,7 +58,7 @@ import { ToastService } from "../../services/toast.service";
 
           <!-- Right Column: Sổ lưu bút (Form & Message List with refined typography) -->
           <div
-            class="md:col-span-7 flex flex-col justify-center max-h-[85vh] reveal-right delay-200"
+            class="md:col-span-7 flex flex-col justify-center max-h-none md:max-h-[85vh] reveal-right delay-200"
           >
             <!-- Section Header -->
             <div class="text-center md:text-left mb-2.5 sm:mb-4 md:mb-5">
@@ -92,7 +92,7 @@ import { ToastService } from "../../services/toast.service";
                   [disabled]="guestbookService.isLimitReached() || isSubmitting"
                   placeholder="Tên của bạn (tối đa 160 ký tự) *"
                   required
-                  class="w-full h-9 sm:h-10 px-3 sm:px-3.5 rounded-xl border border-stone-300 placeholder-stone-400 text-stone-800 text-xs sm:text-sm uppercase focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all bg-stone-50/50 focus:bg-white shadow-inner disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
+                  class="w-full h-10 sm:h-10 px-3.5 sm:px-3.5 rounded-xl border border-stone-300 placeholder-stone-400 text-stone-800 text-[16px] sm:text-sm uppercase focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all bg-stone-50/50 focus:bg-white shadow-inner disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
                 />
               </div>
 
@@ -109,7 +109,7 @@ import { ToastService } from "../../services/toast.service";
                       : 'Nhập lời chúc của bạn (tối đa 3000 ký tự) *'
                   "
                   required
-                  class="w-full h-[130px] sm:h-[155px] md:h-[175px] p-3 sm:p-3.5 pr-10 pb-9 rounded-2xl border border-stone-300 resize-none placeholder-stone-400 text-stone-800 text-xs sm:text-sm focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all bg-stone-50/50 focus:bg-white shadow-inner leading-relaxed disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
+                  class="w-full h-[130px] sm:h-[155px] md:h-[175px] p-3 sm:p-3.5 pr-10 pb-9 rounded-2xl border border-stone-300 resize-none placeholder-stone-400 text-stone-800 text-[16px] sm:text-sm focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all bg-stone-50/50 focus:bg-white shadow-inner leading-relaxed disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
                 >
                 </textarea>
 
@@ -287,8 +287,8 @@ import { ToastService } from "../../services/toast.service";
               (touchcancel)="onTouchEnd()"
               [ngClass]="
                 myLatestWish
-                  ? 'max-h-[16vh] sm:max-h-[19vh] md:max-h-[24vh] lg:max-h-[27vh]'
-                  : 'max-h-[26vh] sm:max-h-[30vh] md:max-h-[36vh] lg:max-h-[40vh]'
+                  ? 'max-h-[140px] sm:max-h-[160px] md:max-h-[24vh] lg:max-h-[27vh]'
+                  : 'max-h-[220px] sm:max-h-[250px] md:max-h-[36vh] lg:max-h-[40vh]'
               "
               class="overflow-y-auto text-start flex flex-col font-beVietnamPro no-scrollbar select-text cursor-default"
             >
