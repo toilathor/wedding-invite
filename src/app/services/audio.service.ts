@@ -42,16 +42,14 @@ export class AudioService {
           if (this.audio && !this.isPlaying()) {
             this.audio.play()
               .then(() => this.isPlaying.set(true))
-              .catch((err) => console.warn('Could not start audio playback', err));
+              .catch(() => undefined);
           }
           this.cleanupGestureListeners(handleFirstGesture);
         };
 
         document.addEventListener('click', handleFirstGesture, { once: true, passive: true });
-        document.addEventListener('scroll', handleFirstGesture, { once: true, passive: true });
         document.addEventListener('touchstart', handleFirstGesture, { once: true, passive: true });
         document.addEventListener('keydown', handleFirstGesture, { once: true, passive: true });
-        document.addEventListener('mousemove', handleFirstGesture, { once: true, passive: true });
       });
   }
 
@@ -71,14 +69,14 @@ export class AudioService {
       this.audio.load();
       this.audio.play()
         .then(() => this.isPlaying.set(true))
-        .catch(err => console.warn('Error playing next track', err));
+        .catch(() => undefined);
     }
   }
 
   private cleanupGestureListeners(handler: () => void) {
     document.removeEventListener('click', handler);
-    document.removeEventListener('scroll', handler);
     document.removeEventListener('touchstart', handler);
+    document.removeEventListener('keydown', handler);
   }
 
   toggle() {
@@ -89,14 +87,14 @@ export class AudioService {
     } else {
       this.audio.play()
         .then(() => this.isPlaying.set(true))
-        .catch(err => console.warn('Play interrupted', err));
+        .catch(() => undefined);
     }
   }
 
   play() {
     this.userInteracted = true;
     if (this.audio && !this.isPlaying()) {
-      this.audio.play().catch(e => console.warn(e));
+      this.audio.play().catch(() => undefined);
     }
   }
 

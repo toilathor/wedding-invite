@@ -55,6 +55,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   weddingData = WEDDING_DATA;
   pageViewService = inject(PageViewService);
   isRsvpOpen = false;
+  private previousBodyOverflow = "";
 
   @ViewChild("pageContainer") pageContainerRef?: ElementRef<HTMLDivElement>;
 
@@ -71,15 +72,23 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   ];
 
   private observer: IntersectionObserver | null = null;
+  private scrollFrame: number | null = null;
 
   openRsvp() {
     this.isRsvpOpen = true;
     this.pageViewService.setLocked(true);
+    if (typeof document !== "undefined") {
+      this.previousBodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+    }
   }
 
   closeRsvp() {
     this.isRsvpOpen = false;
     this.pageViewService.setLocked(false);
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = this.previousBodyOverflow;
+    }
   }
 
   goToPage(index: number) {
@@ -94,7 +103,11 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   @HostListener("window:scroll")
   onWindowScroll() {
     if (typeof window === "undefined") return;
-    this.updateActiveSectionOnScroll();
+    if (this.scrollFrame !== null) return;
+    this.scrollFrame = window.requestAnimationFrame(() => {
+      this.scrollFrame = null;
+      this.updateActiveSectionOnScroll();
+    });
   }
 
   private updateActiveSectionOnScroll() {
@@ -104,32 +117,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    const sections = Array.from(
-      document.querySelectorAll<HTMLElement>(".pageview-section"),
-    );
-    if (sections.length === 0) return;
-
-    const viewportTarget = window.innerHeight * 0.35;
-    let closestIndex = 0;
-    let minDistance = Infinity;
-
-    sections.forEach((sec, idx) => {
-      const rect = sec.getBoundingClientRect();
-      if (rect.top <= viewportTarget && rect.bottom >= viewportTarget) {
-        closestIndex = idx;
-        minDistance = 0;
-      } else {
-        const distance = Math.abs(rect.top - viewportTarget);
-        if (distance < minDistance) {
-          minDistance = distance;
-          closestIndex = idx;
-        }
-      }
-    });
-
-    if (this.pageViewService.currentPageIndex() !== closestIndex) {
-      this.pageViewService.currentPageIndex.set(closestIndex);
-    }
+    this.pageViewService.syncFromViewport();
   }
 
   ngAfterViewInit() {
@@ -159,22 +147,20 @@ export class AppComponent implements AfterViewInit, OnDestroy {
           },
         );
 
-        const observeElements = () => {
-          container
-            .querySelectorAll(".reveal, .reveal-left, .reveal-right")
-            .forEach((el) => {
-              this.observer?.observe(el);
-            });
-        };
-
-        observeElements();
-        setTimeout(observeElements, 300);
-        setTimeout(observeElements, 1000);
+        container
+          .querySelectorAll(".reveal, .reveal-left, .reveal-right")
+          .forEach((el) => this.observer?.observe(el));
       }
     }
   }
 
   ngOnDestroy() {
+    if (this.scrollFrame !== null && typeof window !== "undefined") {
+      window.cancelAnimationFrame(this.scrollFrame);
+    }
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = this.previousBodyOverflow;
+    }
     this.observer?.disconnect();
     this.pageViewService.destroy();
   }

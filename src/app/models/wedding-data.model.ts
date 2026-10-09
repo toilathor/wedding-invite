@@ -80,6 +80,7 @@ export interface GuestMessage {
   createdAt?: string;
   deviceId?: string;
   isPinned?: boolean;
+  rawDate?: unknown;
 }
 
 export interface BankData {

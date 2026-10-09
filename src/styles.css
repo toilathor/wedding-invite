@@ -95,21 +95,14 @@
   html, body {
     margin: 0;
     padding: 0;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  
-  html::-webkit-scrollbar,
-  body::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
   }
 
   body {
-    background-color: #FBF7F5;
-    color: #333333;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
     font-family: "BeVietnamPro", sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
 
   /* Prevent automatic iOS Safari / Mobile browser zoom on form focus */
@@ -135,6 +128,15 @@
   }
 }
 
+:root {
+  --color-paper: #fbf7f5;
+  --color-ink: #2a1810;
+  --color-accent: #a12f0c;
+  --color-accent-dark: #852509;
+  --color-blush: #f4dbce;
+  --content-max-width: 1443px;
+}
+
 /* =========================================================
    NATURAL FLUID SCROLL SYSTEM
 ========================================================= */
@@ -149,6 +151,7 @@ body {
 .pageview-container {
   width: 100%;
   position: relative;
+  isolation: isolate;
 }
 
 .pageview-section {
@@ -165,16 +168,12 @@ body {
   }
 }
 
-/* Global Scrollbar Suppression */
-* {
+/* Hide scrollbars only on intentional inner scrollers. */
+.no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-*::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
-}
+.no-scrollbar::-webkit-scrollbar { display: none; }
 
 /* =========================================================
    FLOATING PAGE INDICATOR DOTS (Minimalist & Easy to Tap)
@@ -191,6 +190,27 @@ body {
   gap: 2px;
   pointer-events: auto;
 }
+
+/* Page-level floating controls must never sit above an open lightbox. */
+body.lightbox-open .pageview-indicator,
+body.lightbox-open app-music-player,
+body.lightbox-open app-quick-menu {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@keyframes lightboxSlideFromRight {
+  from { transform: translate3d(7%, 0, 0) scale(0.99); }
+  to { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes lightboxSlideFromLeft {
+  from { transform: translate3d(-7%, 0, 0) scale(0.99); }
+  to { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+.lightbox-slide-next { animation: lightboxSlideFromRight 380ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+.lightbox-slide-prev { animation: lightboxSlideFromLeft 380ms cubic-bezier(0.22, 0.61, 0.36, 1); }
 
 @media (min-width: 768px) {
   .pageview-indicator {
@@ -216,6 +236,16 @@ body {
 
 .pageview-dot-btn:active {
   transform: scale(0.9);
+}
+
+.pageview-dot-btn:focus-visible,
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
 }
 
 /* Minimalist Visual Dot */
@@ -297,6 +327,20 @@ body {
   transform: translateX(0);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal, .reveal-left, .reveal-right {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Stagger transition delays */
 .delay-100 { transition-delay: 100ms; }
 .delay-200 { transition-delay: 200ms; }
@@ -317,6 +361,19 @@ body {
     transform: translateY(0) scale(1);
   }
 }
+
+@keyframes rsvpBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes rsvpDropdownIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.rsvp-backdrop-in { animation: rsvpBackdropIn 180ms ease-out both; }
+.rsvp-dropdown-in { animation: rsvpDropdownIn 160ms ease-out both; }
 
 .animate-photo-expand {
   animation: photoExpandIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -563,4 +620,3 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-

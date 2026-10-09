@@ -10,12 +10,15 @@ import { PageViewService } from '../../services/pageview.service';
     <div class="fixed bottom-3 right-2.5 sm:bottom-4 sm:right-4 md:bottom-6 md:right-6 z-[9990] flex flex-col items-end select-none" (click)="$event.stopPropagation()">
       <!-- Speed Dial Menu Items (Expanded Upwards on the Right) -->
       <div
+        id="quick-actions"
+        role="menu"
         *ngIf="isOpen"
         class="flex flex-col items-end gap-1.5 sm:gap-2 mb-2 sm:mb-3 animate-photo-expand">
 
         <!-- 1. Gửi lời chúc -->
         <button
           type="button"
+          role="menuitem"
           (click)="scrollToGuestbook()"
           class="flex items-center gap-2 pl-3 pr-1.5 py-1 sm:pl-3.5 sm:pr-2 sm:py-1.5 rounded-full bg-white/95 backdrop-blur-md text-[#A12F0C] hover:bg-[#A12F0C] hover:text-white shadow-xl transition-all group active:scale-95 cursor-pointer">
           <span class="font-prata text-[10px] sm:text-xs md:text-sm font-semibold tracking-wide">Gửi lời chúc</span>
@@ -29,6 +32,7 @@ import { PageViewService } from '../../services/pageview.service';
         <!-- 2. Xác nhận tham dự -->
         <button
           type="button"
+          role="menuitem"
           (click)="triggerRsvp()"
           class="flex items-center gap-2 pl-3 pr-1.5 py-1 sm:pl-3.5 sm:pr-2 sm:py-1.5 rounded-full bg-white/95 backdrop-blur-md text-[#A12F0C] hover:bg-[#A12F0C] hover:text-white shadow-xl transition-all group active:scale-95 cursor-pointer">
           <span class="font-prata text-[10px] sm:text-xs md:text-sm font-semibold tracking-wide">Xác nhận tham dự</span>
@@ -42,6 +46,7 @@ import { PageViewService } from '../../services/pageview.service';
         <!-- 3. Mừng cưới -->
         <button
           type="button"
+          role="menuitem"
           (click)="scrollToBankGift()"
           class="flex items-center gap-2 pl-3 pr-1.5 py-1 sm:pl-3.5 sm:pr-2 sm:py-1.5 rounded-full bg-white/95 backdrop-blur-md text-[#A12F0C] hover:bg-[#A12F0C] hover:text-white shadow-xl transition-all group active:scale-95 cursor-pointer">
           <span class="font-prata text-[10px] sm:text-xs md:text-sm font-semibold tracking-wide">Mừng cưới</span>
@@ -57,6 +62,9 @@ import { PageViewService } from '../../services/pageview.service';
       <button
         type="button"
         (click)="toggleMenu()"
+        [attr.aria-expanded]="isOpen"
+        aria-controls="quick-actions"
+        [attr.aria-label]="isOpen ? 'Đóng menu tác vụ nhanh' : 'Mở menu tác vụ nhanh'"
         [ngClass]="isOpen ? 'bg-stone-800' : 'bg-[#A12F0C]'"
         class="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full text-white shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-300 relative group cursor-pointer"
         title="Menu tác vụ nhanh">
@@ -85,6 +93,11 @@ export class QuickMenuComponent {
 
   toggleMenu() {
     this.isOpen = !this.isOpen;
+  }
+
+  @HostListener('document:keydown.escape')
+  closeMenuWithEscape() {
+    this.isOpen = false;
   }
 
   @HostListener('document:click')

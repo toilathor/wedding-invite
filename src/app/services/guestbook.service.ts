@@ -3,6 +3,9 @@ import {
   addDoc,
   collection,
   onSnapshot,
+  orderBy,
+  limit,
+  query,
   serverTimestamp,
   Timestamp,
   Unsubscribe,
@@ -12,6 +15,7 @@ import { GuestMessage } from "../models/wedding-data.model";
 
 const DEVICE_ID_KEY = "wedding_guestbook_device_id";
 export const MAX_WISHES_PER_DEVICE = 5;
+export const MAX_LOADED_WISHES = 50;
 
 @Injectable({
   providedIn: "root",
@@ -57,15 +61,15 @@ export class GuestbookService implements OnDestroy {
 
   private listenToRealtimeWishes() {
     try {
-      const wishesRef = collection(db, "wishes");
+      const wishesQuery = query(
+        collection(db, "wishes"),
+        orderBy("createdAt", "desc"),
+        limit(MAX_LOADED_WISHES),
+      );
 
       this.unsubscribeSnapshot = onSnapshot(
-        wishesRef,
+        wishesQuery,
         (snapshot) => {
-          console.log(
-            "Firestore snapshot received, docs count:",
-            snapshot.size,
-          );
           if (!snapshot.empty) {
             const list: GuestMessage[] = snapshot.docs.map((doc) => {
               const data = doc.data();
@@ -110,18 +114,18 @@ export class GuestbookService implements OnDestroy {
             });
 
             // Sắp xếp theo thời gian mới nhất (newest first)
-            list.sort((a: any, b: any) => {
+            list.sort((a, b) => {
               const timeA =
                 a.rawDate instanceof Timestamp
                   ? a.rawDate.toMillis()
                   : a.rawDate
-                    ? new Date(a.rawDate).getTime()
+                    ? new Date(String(a.rawDate)).getTime()
                     : 0;
               const timeB =
                 b.rawDate instanceof Timestamp
                   ? b.rawDate.toMillis()
                   : b.rawDate
-                    ? new Date(b.rawDate).getTime()
+                    ? new Date(String(b.rawDate)).getTime()
                     : 0;
               return timeB - timeA;
             });
@@ -157,23 +161,6 @@ export class GuestbookService implements OnDestroy {
       };
     }
 
-    // Optimistic UI Update: Cập nhật giao diện ngay lập tức với trạng thái isPinned = true
-    const tempMessage: GuestMessage = {
-      id: Date.now().toString(),
-      name: trimmedName,
-      content: trimmedContent,
-      deviceId: this.deviceId,
-      isPinned: true,
-      createdAt: new Date().toLocaleDateString("vi-VN", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      }),
-    };
-
-    // Ghim lời chúc mới nhất của mình lên đầu danh sách
-    this.messages.update((list) => [tempMessage, ...list]);
-
     // Gửi lên Firestore kèm deviceId
     try {
       const wishesRef = collection(db, "wishes");
@@ -186,7 +173,10 @@ export class GuestbookService implements OnDestroy {
       return { success: true };
     } catch (error) {
       console.error("Lỗi khi gửi lời chúc lên Firestore:", error);
-      return { success: true }; // Giao diện client-side vẫn hiển thị
+      return {
+        success: false,
+        error: "Không thể gửi lời chúc lúc này. Vui lòng thử lại sau.",
+      };
     }
   }
 

@@ -71,7 +71,12 @@ export function validateAndNormalizePhone(
   }
 
   if (clean.length > 10) {
-    clean = clean.slice(0, 10);
+    return {
+      isValid: false,
+      normalizedKey: "",
+      formattedPhone: "",
+      errorMessage: "Số điện thoại không được vượt quá 10 số.",
+    };
   }
 
   // Kiểm tra đầu số nhà mạng Việt Nam: 03, 05, 07, 08, 09

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject, HostListener } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../services/toast.service';
@@ -17,12 +17,15 @@ interface GuestOption {
   imports: [CommonModule, FormsModule],
   template: `
     <div
-      class="fixed inset-0 z-[99999] bg-stone-900/60 backdrop-blur-md flex items-center justify-center p-3 md:p-6 overflow-y-auto animate-photo-expand"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="rsvp-title"
+      class="fixed inset-0 z-[99999] bg-stone-900/60 flex items-center justify-center p-3 md:p-6 overflow-y-auto rsvp-backdrop-in"
       (click)="onClose.emit()">
 
       <!-- Modal Card Frame with Luxury Arch Top -->
       <div
-        class="bg-[#FBF7F5] border-2 border-[#F4DBCE] rounded-3xl md:rounded-[36px] max-w-lg w-full shadow-2xl relative my-auto overflow-hidden text-center transition-all duration-500 ease-out"
+        class="bg-[#FBF7F5] border-2 border-[#F4DBCE] rounded-3xl md:rounded-[36px] max-w-lg w-full max-h-[calc(100dvh-1.5rem)] md:max-h-[min(860px,calc(100dvh-3rem))] shadow-2xl relative my-auto overflow-hidden text-center flex flex-col transition-all duration-500 ease-out"
         (click)="$event.stopPropagation()">
 
         <!-- Top Right Flower Ornament -->
@@ -40,19 +43,20 @@ interface GuestOption {
           type="button"
           (click)="onClose.emit()"
           class="absolute top-4 right-4 z-20 p-2 rounded-full bg-white/80 hover:bg-white text-stone-500 hover:text-stone-800 transition-all shadow-sm active:scale-90"
-          title="Đóng">
+          title="Đóng"
+          aria-label="Đóng cửa sổ xác nhận tham dự">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
-        <div class="p-6 md:p-8 pt-8 md:pt-10">
+        <div class="shrink-0 px-6 md:px-8 pt-8 md:pt-10">
           <!-- Header -->
           <div class="mb-6 relative z-10">
             <p class="text-xs uppercase tracking-[0.2em] text-[#A12F0C] font-prata font-semibold mb-1">
               R.S.V.P
             </p>
-            <h3 class="text-[38px] md:text-[46px] font-pinyonScript text-[#A12F0C] leading-tight">
+            <h3 id="rsvp-title" class="text-[38px] md:text-[46px] font-pinyonScript text-[#A12F0C] leading-tight">
               Xác nhận tham dự
             </h3>
             <p class="text-stone-600 text-xs md:text-sm font-beVietnamPro italic mt-1 max-w-xs mx-auto">
@@ -88,8 +92,10 @@ interface GuestOption {
             </button>
           </div>
 
+        </div>
+
           <!-- Form Body -->
-          <form (ngSubmit)="submitRsvp()" class="space-y-4 text-left">
+          <form id="rsvp-form" (ngSubmit)="submitRsvp()" (scroll)="closeDropdown()" class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 md:px-8 pb-4 space-y-4 text-left">
             <!-- Name Input -->
             <div>
               <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-700 mb-1 font-prata">
@@ -135,13 +141,14 @@ interface GuestOption {
 
             <!-- Smooth Collapsible Section for Events & Guest Count -->
             <div
-              class="grid transition-all duration-400 ease-out"
+              class="grid overflow-hidden transition-all duration-400 ease-out"
+              [attr.aria-hidden]="!isAttending"
               [ngStyle]="{
                 'grid-template-rows': isAttending ? '1fr' : '0fr',
                 'opacity': isAttending ? '1' : '0',
                 'transform': isAttending ? 'translateY(0)' : 'translateY(-8px)'
               }">
-              <div class="overflow-visible space-y-4 pt-1">
+              <div class="overflow-hidden space-y-4">
                 <!-- Event Selection Cards -->
                 <div>
                   <label class="block text-[11px] font-semibold uppercase tracking-wider text-stone-700 mb-2 font-prata">
@@ -203,7 +210,8 @@ interface GuestOption {
 
                   <!-- Dropdown Trigger Box -->
                   <div
-                    (click)="isDropdownOpen = !isDropdownOpen"
+                    #guestDropdownTrigger
+                    (click)="toggleGuestDropdown($event)"
                     class="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white border border-[#F4DBCE] hover:border-[#A12F0C] transition-all cursor-pointer shadow-sm select-none">
                     <div>
                       <p class="text-xs md:text-sm font-semibold text-stone-800 font-prata">{{ selectedGuestOption.label }}</p>
@@ -225,7 +233,8 @@ interface GuestOption {
                   <!-- Custom Floating Menu -->
                   <div
                     *ngIf="isDropdownOpen"
-                    class="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-2xl border border-[#F4DBCE] shadow-2xl p-1.5 z-50 animate-photo-expand max-h-60 overflow-y-auto space-y-1">
+                    [ngStyle]="guestDropdownStyle"
+                    class="hidden fixed bg-white rounded-2xl border border-[#F4DBCE] shadow-2xl p-1.5 z-[1000000] rsvp-dropdown-in overflow-y-auto overscroll-contain space-y-1">
                     <div
                       *ngFor="let opt of guestOptions"
                       (click)="selectGuest(opt)"
@@ -263,19 +272,46 @@ interface GuestOption {
                 class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#F4DBCE] text-stone-800 text-[16px] sm:text-sm focus:outline-none focus:border-[#A12F0C] focus:ring-1 focus:ring-[#A12F0C] transition-all resize-none shadow-inner font-beVietnamPro"></textarea>
             </div>
 
-            <!-- Submit Button -->
-            <div class="pt-2">
-              <button
-                type="submit"
-                [disabled]="!name.trim() || !phone.trim() || isSubmitting"
-                class="w-full py-3.5 rounded-full bg-[#A12F0C] hover:bg-[#852509] disabled:opacity-50 text-white font-prata text-sm md:text-base uppercase tracking-wider shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 active:scale-95">
-                <svg *ngIf="!isSubmitting" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
-                <span>{{ isSubmitting ? 'Đang gửi...' : (isAttending ? 'Gửi xác nhận tham dự' : 'Gửi lời chúc mừng') }}</span>
-              </button>
-            </div>
           </form>
+
+          <!-- Sticky action area: only the form content scrolls. -->
+          <div class="shrink-0 bg-[#FBF7F5] px-6 md:px-8 pt-2 pb-5 md:pb-7 border-t border-[#F4DBCE]/70">
+            <button
+              type="submit"
+              form="rsvp-form"
+              [disabled]="!name.trim() || !phone.trim() || isSubmitting"
+              class="w-full py-3.5 rounded-full bg-[#A12F0C] hover:bg-[#852509] disabled:opacity-50 text-white font-prata text-sm md:text-base uppercase tracking-wider shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 active:scale-95">
+              <svg *ngIf="!isSubmitting" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5c0-3.08 2.42-5.5 5.5-5.5 1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+              <span>{{ isSubmitting ? 'Đang gửi...' : (isAttending ? 'Gửi xác nhận tham dự' : 'Gửi lời chúc mừng') }}</span>
+            </button>
+          </div>
+      </div>
+
+      <!-- Portal-style menu: outside the scrolling form/card so it cannot be clipped. -->
+      <div
+        *ngIf="isDropdownOpen"
+        (click)="$event.stopPropagation()"
+        [ngStyle]="guestDropdownStyle"
+        class="fixed bg-white rounded-2xl border border-[#F4DBCE] shadow-2xl p-1.5 z-[1000000] rsvp-dropdown-in overflow-y-auto overscroll-contain space-y-1">
+        <div
+          *ngFor="let opt of guestOptions"
+          (click)="selectGuest(opt)"
+          class="flex items-center justify-between px-3.5 py-2.5 rounded-xl cursor-pointer transition-colors"
+          [ngClass]="selectedGuestCount === opt.value ? 'bg-[#FBF7F5] border border-[#A12F0C]/30 text-[#A12F0C]' : 'hover:bg-stone-50 text-stone-700'">
+          <div>
+            <p class="text-xs md:text-sm font-semibold font-prata">{{ opt.label }}</p>
+            <p class="text-[10px] text-stone-500 font-beVietnamPro">{{ opt.sub }}</p>
+          </div>
+          <svg
+            *ngIf="selectedGuestCount === opt.value"
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-4 h-4 text-[#A12F0C]"
+            viewBox="0 0 20 20"
+            fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+          </svg>
         </div>
       </div>
     </div>
@@ -283,6 +319,7 @@ interface GuestOption {
 })
 export class RsvpModalComponent {
   @Output() onClose = new EventEmitter<void>();
+  @ViewChild("guestDropdownTrigger") guestDropdownTrigger?: ElementRef<HTMLElement>;
   private toastService = inject(ToastService);
   private rsvpService = inject(RsvpService);
 
@@ -295,15 +332,14 @@ export class RsvpModalComponent {
   attendBride = false;
   selectedGuestCount = 1;
   isDropdownOpen = false;
+  guestDropdownStyle: Record<string, string> = {};
   note = '';
   isSubmitting = false;
 
   guestOptions: GuestOption[] = [
-    { value: 1, label: '1 người', sub: 'Đi một mình' },
-    { value: 2, label: '2 người', sub: 'Đi cùng người thương / bạn bè' },
-    { value: 3, label: '3 người', sub: 'Đi cùng người thân' },
-    { value: 4, label: '4 người', sub: 'Đi cùng gia đình' },
-    { value: 5, label: '5 người trở lên', sub: 'Đi cùng đại gia đình' },
+    { value: 1, label: 'Một mình', sub: 'Đi một mình cho nhẹ nhàng' },
+    { value: 2, label: 'Hai mình', sub: 'Có đôi có cặp cho vui' },
+    { value: 3, label: 'Gia đình', sub: 'Đi cùng người thân yêu' },
   ];
 
   get selectedGuestOption(): GuestOption {
@@ -313,11 +349,45 @@ export class RsvpModalComponent {
   selectGuest(opt: GuestOption) {
     this.selectedGuestCount = opt.value;
     this.isDropdownOpen = false;
+    this.guestDropdownStyle = {};
   }
 
   @HostListener('document:click')
   closeDropdown() {
     this.isDropdownOpen = false;
+    this.guestDropdownStyle = {};
+  }
+
+  toggleGuestDropdown(event: MouseEvent) {
+    event.stopPropagation();
+    if (this.isDropdownOpen) {
+      this.closeDropdown();
+      return;
+    }
+
+    const trigger = this.guestDropdownTrigger?.nativeElement;
+    if (!trigger || typeof window === "undefined") return;
+
+    const rect = trigger.getBoundingClientRect();
+    const horizontalPadding = 12;
+    const menuHeight = Math.min(240, window.innerHeight - horizontalPadding * 2);
+    const gap = 8;
+    const hasRoomBelow = rect.bottom + gap + menuHeight <= window.innerHeight - horizontalPadding;
+    const top = hasRoomBelow
+      ? rect.bottom + gap
+      : Math.max(horizontalPadding, rect.top - menuHeight - gap);
+    const left = Math.min(
+      Math.max(horizontalPadding, rect.left),
+      window.innerWidth - rect.width - horizontalPadding,
+    );
+
+    this.guestDropdownStyle = {
+      top: `${top}px`,
+      left: `${left}px`,
+      width: `${rect.width}px`,
+      maxHeight: `${menuHeight}px`,
+    };
+    this.isDropdownOpen = true;
   }
 
   onPhoneKeyDown(event: KeyboardEvent) {

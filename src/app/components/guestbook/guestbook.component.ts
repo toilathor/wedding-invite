@@ -1,12 +1,8 @@
 import { CommonModule } from "@angular/common";
 import {
-  AfterViewInit,
   Component,
-  ElementRef,
   HostListener,
   inject,
-  OnDestroy,
-  ViewChild,
 } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import confetti from "canvas-confetti";
@@ -273,76 +269,27 @@ import { ToastService } from "../../services/toast.service";
               </p>
             </div>
 
-            <!-- 2. Scrolling Messages List (Remaining wishes that auto-scroll and loop infinitely) -->
+            <!-- 2. Readable Messages List (only this area scrolls) -->
             <div
               *ngIf="otherMessages.length > 0"
-              #messageList
-              (scroll)="onScroll()"
-              (wheel)="onWheel($event)"
-              (mouseenter)="pauseScroll()"
-              (mouseleave)="resumeScroll()"
-              (touchstart)="onTouchStart($event)"
-              (touchmove)="onTouchMove($event)"
-              (touchend)="onTouchEnd()"
-              (touchcancel)="onTouchEnd()"
-              [ngClass]="
-                myLatestWish
-                  ? 'max-h-[140px] sm:max-h-[160px] md:max-h-[24vh] lg:max-h-[27vh]'
-                  : 'max-h-[220px] sm:max-h-[250px] md:max-h-[36vh] lg:max-h-[40vh]'
-              "
-              class="overflow-y-auto text-start flex flex-col font-beVietnamPro no-scrollbar select-text cursor-default"
+              class="max-h-[220px] sm:max-h-[260px] md:max-h-[36vh] lg:max-h-[40vh] overflow-y-auto overscroll-contain pr-1 text-start flex flex-col gap-3 font-beVietnamPro select-text"
             >
-              <!-- Set 1 (Base Messages Cycle) -->
-              <div #firstSet class="flex flex-col gap-3 pb-3">
-                <div
-                  *ngFor="let msg of baseMessages"
-                  class="border-b border-dashed border-stone-300 pb-3.5"
-                >
-                  <div class="flex items-center justify-between mb-1.5">
-                    <h4 class="font-bold text-xs sm:text-sm font-prata text-[#2A1810] uppercase tracking-wide">
-                      {{ msg.name }}
-                    </h4>
-                    <span
-                      class="text-[10px] sm:text-[11px] text-stone-400 font-light font-beVietnamPro shrink-0"
-                    >
-                      {{ msg.createdAt || "Mới đây" }}
-                    </span>
-                  </div>
-                  <p
-                    class="text-stone-700 text-xs sm:text-[13px] leading-relaxed font-beVietnamPro"
-                  >
-                    {{ msg.content }}
-                  </p>
-                </div>
-              </div>
-
-              <!-- Set 2 (Clone for Infinite Seamless Circular Loop - Chỉ hiển thị khi có từ 2 lời chúc trở lên) -->
-              <div
-                *ngIf="isScrollable"
-                class="flex flex-col gap-3 pb-3"
-                aria-hidden="true"
+              <article
+                *ngFor="let msg of otherMessages; trackBy: trackByMessageId"
+                class="border-b border-dashed border-stone-300 pb-3.5 last:border-b-0"
               >
-                <div
-                  *ngFor="let msg of baseMessages"
-                  class="border-b border-dashed border-stone-300 pb-3.5"
-                >
-                  <div class="flex items-center justify-between mb-1.5">
-                    <h4 class="font-bold text-xs sm:text-sm font-prata text-[#2A1810] uppercase tracking-wide">
-                      {{ msg.name }}
-                    </h4>
-                    <span
-                      class="text-[10px] sm:text-[11px] text-stone-400 font-light font-beVietnamPro shrink-0"
-                    >
-                      {{ msg.createdAt || "Mới đây" }}
-                    </span>
-                  </div>
-                  <p
-                    class="text-stone-700 text-xs sm:text-[13px] leading-relaxed font-beVietnamPro"
-                  >
-                    {{ msg.content }}
-                  </p>
+                <div class="flex items-center justify-between gap-3 mb-1.5">
+                  <h4 class="font-bold text-xs sm:text-sm font-prata text-[#2A1810] uppercase tracking-wide truncate">
+                    {{ msg.name }}
+                  </h4>
+                  <time class="text-[10px] sm:text-[11px] text-stone-400 font-light font-beVietnamPro shrink-0">
+                    {{ msg.createdAt || "Mới đây" }}
+                  </time>
                 </div>
-              </div>
+                <p class="text-stone-700 text-xs sm:text-[13px] leading-relaxed font-beVietnamPro break-words">
+                  {{ msg.content }}
+                </p>
+              </article>
             </div>
           </div>
         </div>
@@ -350,22 +297,14 @@ import { ToastService } from "../../services/toast.service";
     </section>
   `,
 })
-export class GuestbookComponent implements AfterViewInit, OnDestroy {
+export class GuestbookComponent {
   guestbookService = inject(GuestbookService);
   toastService = inject(ToastService);
-
-  @ViewChild("messageList") messageListRef?: ElementRef<HTMLDivElement>;
-  @ViewChild("firstSet") firstSetRef?: ElementRef<HTMLDivElement>;
 
   name = "";
   content = "";
   isSubmitting = false;
   isSuggestionsOpen = false;
-  private isPaused = false;
-  private rafId: number | null = null;
-  private lastTimestamp = 0;
-  private scrollSpeed = 32; // Tốc độ cuộn 32 pixel/giây (rất mượt mà và dễ đọc)
-  private touchStartY = 0;
 
   wishSuggestions: string[] = [
     "Chúc mừng hạnh phúc! Chúc hai bạn trăm năm hòa hợp, vẹn tròn yêu thương! 💕",
@@ -400,129 +339,13 @@ export class GuestbookComponent implements AfterViewInit, OnDestroy {
     return all.filter((m) => m.id !== latest.id);
   }
 
-  get isScrollable(): boolean {
-    return this.otherMessages.length > 1;
-  }
-
-  get baseMessages(): GuestMessage[] {
-    const msgs = this.otherMessages;
-    if (!msgs || msgs.length === 0) return [];
-    // Nếu chỉ có 1 lời chúc trong danh sách cuộn -> hiển thị tĩnh
-    if (msgs.length === 1) return msgs;
-
-    // Từ 2 lời chúc trở lên: Đảm bảo có tối thiểu 8 items để chiều cao vượt khung hiển thị -> cuộn vô tận mượt mà
-    const repeatCount = Math.max(1, Math.ceil(8 / msgs.length));
-    const result: typeof msgs = [];
-    for (let i = 0; i < repeatCount; i++) {
-      result.push(...msgs);
-    }
-    return result;
-  }
-
-  ngAfterViewInit() {
-    this.startAutoScroll();
+  trackByMessageId(_index: number, message: GuestMessage): string | number {
+    return message.id;
   }
 
   applySuggestion(suggestion: string) {
     this.content = suggestion;
     this.isSuggestionsOpen = false;
-  }
-
-  onScroll() {
-    if (!this.isScrollable || !this.messageListRef) return;
-    const el = this.messageListRef.nativeElement;
-    const singleSetHeight =
-      this.firstSetRef?.nativeElement?.offsetHeight || el.scrollHeight / 2;
-
-    if (singleSetHeight <= 0) return;
-
-    // Khi cuộn chạm hoặc vượt chu kỳ 1 -> lập tức quay về vị trí modulo chu kỳ 1
-    if (el.scrollTop >= singleSetHeight) {
-      el.scrollTop -= singleSetHeight;
-    }
-  }
-
-  onWheel(event: WheelEvent) {
-    if (!this.isScrollable || !this.messageListRef) return;
-    const el = this.messageListRef.nativeElement;
-    const singleSetHeight =
-      this.firstSetRef?.nativeElement?.offsetHeight || el.scrollHeight / 2;
-
-    if (singleSetHeight <= 0) return;
-
-    // Khi người dùng lăn chuột ngược lên ở đầu trang -> nhảy về vị trí tương đương ở chu kỳ 1 để cuộn lên vô tận
-    if (event.deltaY < 0 && el.scrollTop <= 1) {
-      el.scrollTop += singleSetHeight;
-    }
-  }
-
-  onTouchStart(e: TouchEvent) {
-    this.pauseScroll();
-    this.touchStartY = e.touches[0]?.clientY || 0;
-  }
-
-  onTouchMove(e: TouchEvent) {
-    if (!this.isScrollable || !this.messageListRef) return;
-    const el = this.messageListRef.nativeElement;
-    const singleSetHeight =
-      this.firstSetRef?.nativeElement?.offsetHeight || el.scrollHeight / 2;
-
-    if (singleSetHeight <= 0) return;
-
-    const currentY = e.touches[0]?.clientY || 0;
-    const deltaY = this.touchStartY - currentY;
-
-    if (deltaY < 0 && el.scrollTop <= 1) {
-      el.scrollTop += singleSetHeight;
-    }
-    this.touchStartY = currentY;
-  }
-
-  onTouchEnd() {
-    this.resumeScroll();
-  }
-
-  private startAutoScroll() {
-    this.stopAutoScroll();
-
-    const loop = (timestamp: number) => {
-      if (!this.lastTimestamp) this.lastTimestamp = timestamp;
-      const deltaTime = (timestamp - this.lastTimestamp) / 1000;
-      this.lastTimestamp = timestamp;
-
-      if (this.isScrollable && !this.isPaused && this.messageListRef) {
-        const el = this.messageListRef.nativeElement;
-        const singleSetHeight =
-          this.firstSetRef?.nativeElement?.offsetHeight || el.scrollHeight / 2;
-
-        if (singleSetHeight > 0) {
-          el.scrollTop += this.scrollSpeed * deltaTime;
-          if (el.scrollTop >= singleSetHeight) {
-            el.scrollTop -= singleSetHeight;
-          }
-        }
-      }
-
-      this.rafId = requestAnimationFrame(loop);
-    };
-
-    this.rafId = requestAnimationFrame(loop);
-  }
-
-  private stopAutoScroll() {
-    if (this.rafId !== null) {
-      cancelAnimationFrame(this.rafId);
-      this.rafId = null;
-    }
-    this.lastTimestamp = 0;
-  }
-
-  pauseScroll() {
-    this.isPaused = true;
-  }
-
-  resumeScroll() {
-    this.isPaused = false;
   }
 
   async submitWish() {
@@ -560,15 +383,5 @@ export class GuestbookComponent implements AfterViewInit, OnDestroy {
 
     this.isSubmitting = false;
 
-    // Reset scroll position
-    setTimeout(() => {
-      if (this.messageListRef) {
-        this.messageListRef.nativeElement.scrollTop = 0;
-      }
-    }, 100);
-  }
-
-  ngOnDestroy() {
-    this.stopAutoScroll();
   }
 }

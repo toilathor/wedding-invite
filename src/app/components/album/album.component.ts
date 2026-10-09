@@ -179,7 +179,7 @@ import { PageViewService } from "../../services/pageview.service";
     <!-- 2. Ultra-Smooth Lightbox Modal (Placed outside section to avoid transform/reveal container bugs) -->
     <div
       *ngIf="lightboxOpen"
-      class="fixed inset-0 z-[999999] w-screen h-[100lvh] bg-black/95 backdrop-blur-xl flex flex-col justify-between items-center select-none overflow-hidden"
+      class="fixed inset-0 z-[999999] w-screen h-[100dvh] bg-black/95 backdrop-blur-xl flex flex-col justify-between items-center select-none overflow-hidden overscroll-contain"
       role="dialog"
       aria-modal="true"
       aria-label="Xem ảnh cưới"
@@ -338,11 +338,11 @@ import { PageViewService } from "../../services/pageview.service";
 
       <!-- Main Photo Viewing Stage with Touch Gestures -->
       <div
-        class="relative w-full flex-1 flex items-center justify-center overflow-hidden px-2 sm:px-14 md:px-20"
+        class="relative w-full flex-1 flex items-center justify-center overflow-hidden px-2 sm:px-14 md:px-20 touch-none"
         (click)="$event.stopPropagation()"
         (touchstart)="onTouchStart($event)"
         (touchmove)="onTouchMove($event)"
-        (touchend)="onTouchEnd()"
+        (touchend)="onTouchEnd($event)"
       >
         <!-- Floating Left Arrow -->
         <button
@@ -380,9 +380,9 @@ import { PageViewService } from "../../services/pageview.service";
           <img
             [src]="data.albums[currentIndex]"
             [alt]="'Ảnh cưới ' + (currentIndex + 1)"
-            class="max-w-[92vw] sm:max-w-[85vw] md:max-w-5xl max-h-[64vh] sm:max-h-[70vh] md:max-h-[74vh] w-auto h-auto object-contain rounded-xl sm:rounded-2xl md:rounded-3xl shadow-2xl transition-opacity duration-200"
-            [class.opacity-100]="!changing"
-            [class.opacity-40]="changing"
+            class="max-w-[92vw] sm:max-w-[85vw] md:max-w-5xl max-h-[64vh] sm:max-h-[70vh] md:max-h-[74vh] w-auto h-auto object-contain rounded-xl sm:rounded-2xl md:rounded-3xl shadow-2xl"
+            [class.lightbox-slide-next]="changing && slideDirection === 'next'"
+            [class.lightbox-slide-prev]="changing && slideDirection === 'prev'"
             draggable="false"
           />
         </div>
@@ -459,7 +459,9 @@ export class AlbumComponent implements OnDestroy {
   isSlideshow = false;
   isZoomed = false;
   changing = false;
+  slideDirection: "next" | "prev" = "next";
   private slideshowTimer: any;
+  private changeTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Touch Swipe coordinates
   private touchStartX = 0;
@@ -467,6 +469,13 @@ export class AlbumComponent implements OnDestroy {
   private touchEndX = 0;
   private touchEndY = 0;
   private lastTapTime = 0;
+  private previousBodyStyles = {
+    overflow: "",
+    position: "",
+    top: "",
+    width: "",
+  };
+  private lockedScrollY = 0;
 
   get initialAlbums(): string[] {
     return this.data?.albums
@@ -497,7 +506,7 @@ export class AlbumComponent implements OnDestroy {
     this.isZoomed = false;
     this.lightboxOpen = true;
     this.pageViewService.setLocked(true);
-    document.body.style.overflow = "hidden";
+    this.lockBodyScroll();
     this.preloadAdjacentImages();
     setTimeout(() => this.scrollThumbIntoView(), 80);
   }
@@ -507,12 +516,12 @@ export class AlbumComponent implements OnDestroy {
     this.isZoomed = false;
     this.stopSlideshow();
     this.pageViewService.setLocked(false);
-    document.body.style.overflow = "";
+    this.restoreBodyScroll();
   }
 
   selectImage(index: number) {
     if (this.currentIndex === index) return;
-    this.triggerChange(() => {
+    this.triggerChange(index > this.currentIndex ? "next" : "prev", () => {
       this.currentIndex = index;
       this.isZoomed = false;
       this.preloadAdjacentImages();
@@ -521,7 +530,7 @@ export class AlbumComponent implements OnDestroy {
   }
 
   nextImage() {
-    this.triggerChange(() => {
+    this.triggerChange("next", () => {
       this.currentIndex = (this.currentIndex + 1) % this.data.albums.length;
       this.isZoomed = false;
       this.preloadAdjacentImages();
@@ -530,7 +539,7 @@ export class AlbumComponent implements OnDestroy {
   }
 
   prevImage() {
-    this.triggerChange(() => {
+    this.triggerChange("prev", () => {
       this.currentIndex =
         (this.currentIndex - 1 + this.data.albums.length) %
         this.data.albums.length;
@@ -567,23 +576,56 @@ export class AlbumComponent implements OnDestroy {
     }
   }
 
-  private triggerChange(action: () => void) {
+  private triggerChange(direction: "next" | "prev", action: () => void) {
+    if (this.changeTimer) clearTimeout(this.changeTimer);
+    this.slideDirection = direction;
     this.changing = true;
-    setTimeout(() => {
-      action();
+    action();
+    this.changeTimer = setTimeout(() => {
       this.changing = false;
-    }, 120);
+      this.changeTimer = null;
+    }, 380);
   }
 
   private scrollThumbIntoView() {
+    const strip = this.thumbnailStrip?.nativeElement;
     const el = document.getElementById("lightbox-thumb-" + this.currentIndex);
-    if (el) {
-      el.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "center",
-      });
-    }
+    if (!strip || !el) return;
+
+    const targetLeft = el.offsetLeft - (strip.clientWidth - el.offsetWidth) / 2;
+    strip.scrollTo({
+      left: Math.max(0, targetLeft),
+      behavior: "smooth",
+    });
+  }
+
+  private lockBodyScroll() {
+    if (typeof window === "undefined" || typeof document === "undefined") return;
+
+    this.lockedScrollY = window.scrollY;
+    this.previousBodyStyles = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+    };
+
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${this.lockedScrollY}px`;
+    document.body.style.width = "100%";
+    document.body.classList.add("lightbox-open");
+  }
+
+  private restoreBodyScroll() {
+    if (typeof window === "undefined" || typeof document === "undefined") return;
+
+    document.body.style.overflow = this.previousBodyStyles.overflow;
+    document.body.style.position = this.previousBodyStyles.position;
+    document.body.style.top = this.previousBodyStyles.top;
+    document.body.style.width = this.previousBodyStyles.width;
+    document.body.classList.remove("lightbox-open");
+    window.scrollTo(0, this.lockedScrollY);
   }
 
   private preloadAdjacentImages() {
@@ -601,6 +643,7 @@ export class AlbumComponent implements OnDestroy {
 
   // Touch Swipe Handlers (Swipe left/right to change photo, swipe down to close)
   onTouchStart(e: TouchEvent) {
+    e.stopPropagation();
     if (e.touches.length === 1) {
       this.touchStartX = e.touches[0].clientX;
       this.touchStartY = e.touches[0].clientY;
@@ -617,13 +660,16 @@ export class AlbumComponent implements OnDestroy {
   }
 
   onTouchMove(e: TouchEvent) {
+    e.preventDefault();
+    e.stopPropagation();
     if (e.touches.length === 1) {
       this.touchEndX = e.touches[0].clientX;
       this.touchEndY = e.touches[0].clientY;
     }
   }
 
-  onTouchEnd() {
+  onTouchEnd(e?: TouchEvent) {
+    e?.stopPropagation();
     const deltaX = this.touchStartX - this.touchEndX;
     const deltaY = this.touchStartY - this.touchEndY;
     const swipeThreshold = 40;
@@ -653,8 +699,14 @@ export class AlbumComponent implements OnDestroy {
   handleKeyDown(event: KeyboardEvent) {
     if (!this.lightboxOpen) return;
     if (event.key === "Escape") this.closeLightbox();
-    if (event.key === "ArrowRight") this.nextImage();
-    if (event.key === "ArrowLeft") this.prevImage();
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      this.nextImage();
+    }
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      this.prevImage();
+    }
     if (event.key === "+" || event.key === "=") this.isZoomed = true;
     if (event.key === "-" || event.key === "_") this.isZoomed = false;
     if (event.key === " " || event.code === "Space") {
@@ -665,7 +717,9 @@ export class AlbumComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.stopSlideshow();
+    if (this.changeTimer) clearTimeout(this.changeTimer);
     this.pageViewService.setLocked(false);
-    document.body.style.overflow = "";
+    if (this.lightboxOpen) this.restoreBodyScroll();
+    else document.body.classList.remove("lightbox-open");
   }
 }

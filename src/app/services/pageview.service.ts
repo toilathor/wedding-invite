@@ -25,6 +25,37 @@ export class PageViewService {
     this.totalPages.set(sections.length);
   }
 
+  setCurrentPage(index: number) {
+    if (this.sections.length === 0) return;
+    const nextIndex = Math.max(0, Math.min(index, this.sections.length - 1));
+    if (this.currentPageIndex() === nextIndex) return;
+    this.currentPageIndex.set(nextIndex);
+    this.updateActiveSectionClass();
+  }
+
+  syncFromViewport(viewportRatio = 0.35) {
+    if (typeof window === "undefined" || this.sections.length === 0) return;
+
+    const target = window.innerHeight * viewportRatio;
+    let closestIndex = 0;
+    let minDistance = Number.POSITIVE_INFINITY;
+
+    this.sections.forEach((section, index) => {
+      const rect = section.getBoundingClientRect();
+      const distance =
+        rect.top <= target && rect.bottom >= target
+          ? 0
+          : Math.abs(rect.top - target);
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = index;
+      }
+    });
+
+    this.setCurrentPage(closestIndex);
+  }
+
   setLocked(locked: boolean) {
     this.isLocked = locked;
   }
