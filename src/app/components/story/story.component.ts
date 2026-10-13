@@ -6,17 +6,44 @@ import { StoryData } from "../../models/wedding-data.model";
   selector: "app-story",
   standalone: true,
   imports: [CommonModule],
+  styles: [`
+    .story-edge-watermark {
+      --watermark-size: 2.625rem;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      z-index: 0;
+      width: max-content;
+      color: rgb(244 219 206 / 0.8);
+      font-family: Prata, serif;
+      font-size: var(--watermark-size);
+      line-height: 1;
+      text-transform: uppercase;
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+      transform: translate(-50%, -50%) rotate(90deg);
+    }
+
+    @media (min-width: 768px) {
+      .story-edge-watermark {
+        --watermark-size: 5.625rem;
+        color: rgb(244 219 206 / 0.7);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .story-edge-watermark {
+        --watermark-size: 6.875rem;
+      }
+    }
+  `],
   template: `
     <section
-      class="relative grid text-center bg-[#FBF7F5] overflow-visible pt-4 sm:pt-6 md:pt-10 pb-0 reveal"
+      class="relative grid text-center bg-[#FBF7F5] overflow-visible pt-6 sm:pt-8 md:pt-12 lg:pt-16 pb-0 reveal"
     >
-      <!-- Watermark Background Labels on Desktop (Using vertical writing mode for perfect bottom-left placement) -->
-      <div
-        class="hidden md:block uppercase absolute top-1/3 -left-[335px] font-prata rotate-90 text-[110px]"
-        style="color: rgb(244, 219, 206);"
-      >
-        Love story
-      </div>
+      <!-- Full label shifted half a line-height beyond the left edge. -->
+      <div class="story-edge-watermark" aria-hidden="true">Love story</div>
 
       <div
         class="max-w-[1443px] mx-auto pt-2 sm:pt-4 md:pt-6 pb-0 w-full px-4 md:px-[15px] z-10"

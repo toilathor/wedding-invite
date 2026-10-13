@@ -7,7 +7,7 @@ import { TimelineData } from '../../models/wedding-data.model';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <section class="relative bg-white overflow-hidden pt-12 md:pt-20 lg:pt-24 xl:pt-28 pb-4 sm:pb-6 md:pb-8 reveal">
+    <section class="relative bg-white overflow-hidden pt-8 sm:pt-12 md:pt-16 lg:pt-20 xl:pt-24 pb-4 sm:pb-6 md:pb-8 reveal">
       <div class="max-w-[1443px] mx-auto w-full px-4 sm:px-6 md:px-8 lg:px-12">
         <!-- Section Header -->
         <div class="text-center mb-8 sm:mb-12 md:mb-16 lg:mb-20">

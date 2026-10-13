@@ -154,6 +154,12 @@ body {
   isolation: isolate;
 }
 
+.couple-screen-section {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+}
+
 .pageview-section {
   display: block;
   box-sizing: border-box;

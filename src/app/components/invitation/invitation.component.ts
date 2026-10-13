@@ -24,7 +24,7 @@ interface TimeLeft {
   imports: [CommonModule],
   template: `
     <section
-      class="relative bg-white grid py-6 sm:py-8 md:py-12 lg:py-16 xl:py-20 text-center overflow-hidden reveal"
+      class="relative bg-white grid py-8 sm:py-10 md:py-14 lg:py-16 xl:py-20 text-center overflow-hidden reveal"
     >
       <!-- Title & Intro -->
       <div
