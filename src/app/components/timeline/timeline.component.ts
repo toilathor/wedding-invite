@@ -44,7 +44,7 @@ import { TimelineData } from '../../models/wedding-data.model';
                 <img
                   src="/assets/images/templates/sangtrong/1.png"
                   alt="Milestone Decor"
-                  class="w-[130px] h-[110px] md:w-[140px] md:h-[120px] object-contain"
+                  class="w-[130px] md:w-[140px] h-auto object-contain"
                 />
               </div>
 

@@ -36,12 +36,12 @@ import { ToastService } from "../../services/toast.service";
         <img
           src="/assets/images/templates/sangtrong/9.png"
           alt="Decor Left"
-          class="absolute bottom-0 -left-2 md:w-[220px] md:h-[260px] lg:w-[250px] lg:h-[290px] w-[100px] h-[120px] hidden md:block pointer-events-none z-20"
+          class="absolute bottom-0 -left-2 md:w-[160px] lg:w-[210px] xl:w-[250px] h-auto hidden md:block pointer-events-none z-20"
         />
         <img
           src="/assets/images/templates/sangtrong/8.png"
           alt="Decor Right"
-          class="absolute bottom-0 -right-2 md:w-[220px] md:h-[260px] lg:w-[250px] lg:h-[290px] w-[100px] h-[120px] hidden md:block pointer-events-none z-20"
+          class="absolute bottom-0 -right-2 md:w-[160px] lg:w-[210px] xl:w-[250px] h-auto hidden md:block pointer-events-none z-20"
         />
 
         <div class="max-w-[1443px] mx-auto px-4 sm:px-[15px]">

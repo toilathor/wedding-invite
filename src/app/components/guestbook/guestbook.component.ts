@@ -23,13 +23,13 @@ import { ToastService } from "../../services/toast.service";
       <img
         src="/assets/images/templates/sangtrong/decor.png"
         alt="Floral Decor Top Left"
-        class="absolute top-0 left-0 md:w-[280px] lg:w-[320px] md:h-[240px] lg:h-[270px] w-[140px] h-[120px] pointer-events-none opacity-80"
+        class="absolute top-0 left-0 w-[140px] md:w-[210px] lg:w-[260px] xl:w-[320px] h-auto pointer-events-none opacity-80"
       />
       <!-- Bottom Right Floral Decor -->
       <img
         src="/assets/images/templates/sangtrong/flower-decor-bottom.png"
         alt="Floral Decor Bottom Right"
-        class="absolute bottom-0 right-0 md:w-[280px] lg:w-[320px] md:h-[240px] lg:h-[270px] w-[140px] h-[120px] pointer-events-none opacity-80"
+        class="absolute bottom-0 right-0 w-[140px] md:w-[210px] lg:w-[260px] xl:w-[320px] h-auto pointer-events-none opacity-80"
       />
 
       <div

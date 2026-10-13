@@ -21,12 +21,12 @@ import { WeddingEventItem } from "../../models/wedding-data.model";
       <img
         src="/assets/images/templates/sangtrong/img/left.png"
         alt="Ornament Left"
-        class="absolute top-0 left-0 md:w-[280px] md:h-[340px] lg:w-[340px] lg:h-[400px] w-[170px] h-[180px] pointer-events-none opacity-85 z-0"
+        class="absolute top-0 left-0 w-[170px] md:w-[210px] lg:w-[260px] xl:w-[340px] h-auto pointer-events-none opacity-85 z-0"
       />
       <img
         src="/assets/images/templates/sangtrong/img/right.png"
         alt="Ornament Right"
-        class="absolute -bottom-0 -right-0 md:w-[260px] md:h-[320px] lg:w-[320px] lg:h-[380px] w-[160px] h-[170px] pointer-events-none opacity-85"
+        class="absolute bottom-0 right-0 w-[160px] md:w-[200px] lg:w-[250px] xl:w-[320px] h-auto pointer-events-none opacity-85"
       />
 
       <div

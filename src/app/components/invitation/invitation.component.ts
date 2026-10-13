@@ -49,12 +49,12 @@ interface TimeLeft {
         <img
           src="/assets/images/templates/sangtrong/img/left.png"
           alt="Decor Left"
-          class="absolute left-0 top-0 w-[180px] md:w-[272px] lg:w-[340px] h-[100%] hidden md:block pointer-events-none opacity-85"
+          class="absolute left-0 top-0 md:w-[190px] lg:w-[260px] xl:w-[340px] h-auto hidden md:block pointer-events-none opacity-85"
         />
         <img
           src="/assets/images/templates/sangtrong/8.png"
           alt="Decor Right"
-          class="absolute right-0 bottom-0 w-[180px] md:w-[272px] lg:w-[340px] h-[100%] hidden md:block pointer-events-none opacity-85"
+          class="absolute right-0 bottom-0 md:w-[190px] lg:w-[260px] xl:w-[340px] h-auto hidden md:block pointer-events-none opacity-85"
         />
 
         <div class="max-w-[1443px] mx-auto z-10 w-full">
