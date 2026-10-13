@@ -10,12 +10,43 @@ export class AudioService {
   currentTrackIndex = signal<number>(0);
   private playlist: string[] = [];
   private userInteracted = false;
+  private pausedByVisibility = false;
 
   constructor() {
     this.playlist = WEDDING_DATA.audioUrls?.length
       ? WEDDING_DATA.audioUrls
       : (WEDDING_DATA.audioUrl ? [WEDDING_DATA.audioUrl] : []);
     this.initAudio();
+    this.setupVisibilityHandling();
+  }
+
+  private setupVisibilityHandling() {
+    if (typeof document === 'undefined') return;
+
+    const pauseWhenLeavingPage = () => {
+      // Only resume automatically when the music was playing before the
+      // user left the page. A manual pause should remain a manual pause.
+      this.pausedByVisibility = this.isPlaying();
+      if (this.pausedByVisibility) this.pause();
+    };
+
+    const resumeWhenReturning = () => {
+      if (this.pausedByVisibility) {
+        this.pausedByVisibility = false;
+        this.audio?.play().catch(() => undefined);
+      }
+    };
+
+    // Covers switching tabs, hiding/minimizing the browser, or leaving the
+    // page for another application.
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) pauseWhenLeavingPage();
+      else resumeWhenReturning();
+    });
+
+    // Covers browser navigation and returning to a page restored from bfcache.
+    window.addEventListener('pagehide', pauseWhenLeavingPage);
+    window.addEventListener('pageshow', resumeWhenReturning);
   }
 
   private initAudio() {
@@ -23,6 +54,7 @@ export class AudioService {
 
     this.audio = new Audio(this.playlist[this.currentTrackIndex()]);
     this.audio.preload = 'auto';
+    this.audio.autoplay = true;
 
     this.audio.addEventListener('play', () => this.isPlaying.set(true));
     this.audio.addEventListener('pause', () => this.isPlaying.set(false));
