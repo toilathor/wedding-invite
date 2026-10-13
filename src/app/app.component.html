@@ -6,7 +6,7 @@
   <app-toast></app-toast>
 
   <!-- 1. Hero / Banner -->
-  <div class="pageview-section !py-0 relative z-10 overflow-visible" id="page-banner">
+  <div class="pageview-section !py-0 relative z-10 overflow-visible" id="page-banner" data-scroll-hint-section>
     <app-banner [data]="weddingData.banner"></app-banner>
   </div>
 
@@ -16,7 +16,7 @@
   </div>
 
   <!-- 3. Introduction (Groom & Bride) -->
-  <div class="pageview-section !py-0" id="page-introduction">
+  <div class="pageview-section !py-0 relative" id="page-introduction" data-scroll-hint-section>
     <app-introduction [data]="weddingData.introduction"></app-introduction>
   </div>
 
@@ -79,6 +79,18 @@
       <span class="pageview-dot"></span>
     </button>
   </nav>
+
+  <div
+    *ngIf="isScrollHintVisible()"
+  class="scroll-content-hint"
+  aria-label="Còn nội dung bên dưới"
+  >
+    <svg class="scroll-content-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="6.5" y="2.5" width="11" height="19" rx="5.5" />
+      <path d="M12 6v4" />
+      <path d="M9.5 17l2.5 2.5 2.5-2.5" />
+    </svg>
+  </div>
 
   <!-- Floating Audio Player (Bottom-Left) -->
   <app-music-player></app-music-player>

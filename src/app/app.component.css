@@ -3,3 +3,95 @@
   width: 100%;
   overflow-x: hidden;
 }
+
+.scroll-content-hint {
+  position: fixed !important;
+  inset-inline: 0;
+  bottom: 0 !important;
+  z-index: 9970;
+  width: auto;
+  height: calc(7rem + env(safe-area-inset-bottom));
+  color: #a12f0c;
+  pointer-events: none;
+}
+
+.scroll-content-hint::before,
+.scroll-content-hint::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.scroll-content-hint::before {
+  display: none;
+}
+
+.scroll-content-hint::after {
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to top,
+    rgba(161, 47, 12, 0.5) 0%,
+    rgba(244, 219, 206, 0.3) 28%,
+    rgba(244, 219, 206, 0.1) 60%,
+    transparent 100%
+  );
+  transform: none;
+  animation: scrollHintLedCast 1.65s ease-in-out infinite;
+}
+
+.scroll-content-icon {
+  position: absolute;
+  left: 50%;
+  bottom: calc(0.45rem + env(safe-area-inset-bottom));
+  z-index: 1;
+  width: 1.35rem;
+  height: 1.35rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.65;
+  transform: translateX(-50%);
+  animation: scrollHintArrow 1.65s ease-in-out infinite;
+}
+
+/* Some mobile/tablet webviews report a zero safe-area inset even when the
+   device gesture bar is visible. Keep the hint clear of that system area. */
+@media (max-width: 1023px) {
+  .scroll-content-hint {
+    bottom: 0 !important;
+  }
+}
+
+@keyframes scrollHintArrow {
+  0%, 100% {
+    opacity: 0.68;
+    transform: translate(-50%, -0.22rem);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, 0.18rem);
+  }
+}
+
+@keyframes scrollHintLedGlow {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+@keyframes scrollHintLedCast {
+  0%, 100% { opacity: 0.68; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-content-hint::before,
+  .scroll-content-hint::after,
+  .scroll-content-icon {
+    animation: none;
+  }
+}

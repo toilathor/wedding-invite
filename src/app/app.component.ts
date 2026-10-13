@@ -72,6 +72,9 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   ];
 
   private observer: IntersectionObserver | null = null;
+  private scrollHintObserver: IntersectionObserver | null = null;
+  private scrollHintTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  private visibleScrollHints = new Set<string>();
   private scrollFrame: number | null = null;
 
   openRsvp() {
@@ -95,6 +98,10 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     this.pageViewService.goToPage(index);
   }
 
+  isScrollHintVisible() {
+    return this.visibleScrollHints.size > 0;
+  }
+
   @HostListener("window:keydown", ["$event"])
   onKeyDown(event: KeyboardEvent) {
     this.pageViewService.handleKeyDown(event);
@@ -103,6 +110,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   @HostListener("window:scroll")
   onWindowScroll() {
     if (typeof window === "undefined") return;
+    this.hideScrollHints();
     if (this.scrollFrame !== null) return;
     this.scrollFrame = window.requestAnimationFrame(() => {
       this.scrollFrame = null;
@@ -150,6 +158,24 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         container
           .querySelectorAll(".reveal, .reveal-left, .reveal-right")
           .forEach((el) => this.observer?.observe(el));
+
+        this.scrollHintObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              const sectionId = (entry.target as HTMLElement).id;
+              if (entry.isIntersecting && entry.intersectionRatio >= 0.2) {
+                this.scheduleScrollHint(sectionId);
+              } else {
+                this.clearScrollHint(sectionId);
+              }
+            });
+          },
+          { threshold: [0, 0.2] },
+        );
+
+        container
+          .querySelectorAll<HTMLElement>("[data-scroll-hint-section]")
+          .forEach((section) => this.scrollHintObserver?.observe(section));
       }
     }
   }
@@ -162,6 +188,31 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       document.body.style.overflow = this.previousBodyOverflow;
     }
     this.observer?.disconnect();
+    this.scrollHintObserver?.disconnect();
+    this.scrollHintTimers.forEach((timer) => clearTimeout(timer));
     this.pageViewService.destroy();
+  }
+
+  private scheduleScrollHint(sectionId: string) {
+    if (this.scrollHintTimers.has(sectionId) || this.visibleScrollHints.has(sectionId)) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      this.scrollHintTimers.delete(sectionId);
+      this.visibleScrollHints.add(sectionId);
+    }, 1000);
+    this.scrollHintTimers.set(sectionId, timer);
+  }
+
+  private clearScrollHint(sectionId: string) {
+    const timer = this.scrollHintTimers.get(sectionId);
+    if (timer) clearTimeout(timer);
+    this.scrollHintTimers.delete(sectionId);
+    this.visibleScrollHints.delete(sectionId);
+  }
+
+  private hideScrollHints() {
+    this.visibleScrollHints.clear();
   }
 }
