@@ -19,7 +19,7 @@ import { PageViewService } from "../../services/pageview.service";
     <!-- 1. Page Gallery Section -->
     <section
       id="wedding-album-section"
-      class="relative max-w-[1443px] w-full mx-auto min-h-[100lvh] lg:h-screen flex flex-col justify-center py-6 sm:py-8 md:py-10 lg:py-12 px-4 sm:px-6 md:px-8 reveal"
+      class="relative max-w-[1443px] w-full mx-auto min-h-[100lvh] lg:min-h-screen flex flex-col justify-center py-6 sm:py-8 md:py-10 lg:py-12 px-4 sm:px-6 md:px-8 reveal"
     >
       <!-- Title -->
       <h2
@@ -29,7 +29,7 @@ import { PageViewService } from "../../services/pageview.service";
       </h2>
 
       <!-- Gallery Grid: Initial Photos (4 on Mobile, 8 on Desktop when collapsed) -->
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-3.5 lg:gap-4 max-h-none md:max-h-[70vh] overflow-y-auto no-scrollbar py-1">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-3.5 lg:gap-4 py-1">
         <div
           *ngFor="let img of initialAlbums; let idx = index"
           (click)="openLightbox(idx)"
@@ -179,7 +179,8 @@ import { PageViewService } from "../../services/pageview.service";
     <!-- 2. Ultra-Smooth Lightbox Modal (Placed outside section to avoid transform/reveal container bugs) -->
     <div
       *ngIf="lightboxOpen"
-      class="fixed inset-0 z-[999999] w-screen h-[100dvh] bg-black/95 backdrop-blur-xl flex flex-col justify-between items-center select-none overflow-hidden overscroll-contain"
+      class="fixed inset-0 z-[999999] w-screen h-[100dvh] min-h-[100svh] bg-black/95 backdrop-blur-xl flex flex-col justify-between items-center select-none overflow-hidden overscroll-contain"
+      style="padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);"
       role="dialog"
       aria-modal="true"
       aria-label="Xem ảnh cưới"
@@ -315,7 +316,7 @@ import { PageViewService } from "../../services/pageview.service";
             type="button"
             (click)="closeLightbox()"
             class="p-2 sm:p-2.5 rounded-full bg-white/10 hover:bg-[#A12F0C] active:scale-90 transition-all text-white"
-            title="Đóng xem ảnh (Phím Esc hoặc Vuốt xuống)"
+            title="Đóng xem ảnh (Phím Esc hoặc nút đóng)"
             aria-label="Đóng"
           >
             <svg
@@ -471,11 +472,8 @@ export class AlbumComponent implements OnDestroy {
   private lastTapTime = 0;
   private previousBodyStyles = {
     overflow: "",
-    position: "",
-    top: "",
-    width: "",
+    htmlOverflow: "",
   };
-  private lockedScrollY = 0;
 
   get initialAlbums(): string[] {
     return this.data?.albums
@@ -488,16 +486,6 @@ export class AlbumComponent implements OnDestroy {
   }
 
   toggleExpand() {
-    if (this.showAll) {
-      // Smoothly scroll back if user is scrolled past the album section top
-      const albumSection = document.getElementById("wedding-album-section");
-      if (albumSection) {
-        const rect = albumSection.getBoundingClientRect();
-        if (rect.top < -50) {
-          albumSection.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      }
-    }
     this.showAll = !this.showAll;
   }
 
@@ -602,30 +590,24 @@ export class AlbumComponent implements OnDestroy {
   private lockBodyScroll() {
     if (typeof window === "undefined" || typeof document === "undefined") return;
 
-    this.lockedScrollY = window.scrollY;
     this.previousBodyStyles = {
       overflow: document.body.style.overflow,
-      position: document.body.style.position,
-      top: document.body.style.top,
-      width: document.body.style.width,
+      htmlOverflow: document.documentElement.style.overflow,
     };
 
     document.body.style.overflow = "hidden";
-    document.body.style.position = "fixed";
-    document.body.style.top = `-${this.lockedScrollY}px`;
-    document.body.style.width = "100%";
+    document.documentElement.style.overflow = "hidden";
     document.body.classList.add("lightbox-open");
+    document.documentElement.classList.add("lightbox-open");
   }
 
   private restoreBodyScroll() {
     if (typeof window === "undefined" || typeof document === "undefined") return;
 
     document.body.style.overflow = this.previousBodyStyles.overflow;
-    document.body.style.position = this.previousBodyStyles.position;
-    document.body.style.top = this.previousBodyStyles.top;
-    document.body.style.width = this.previousBodyStyles.width;
+    document.documentElement.style.overflow = this.previousBodyStyles.htmlOverflow;
     document.body.classList.remove("lightbox-open");
-    window.scrollTo(0, this.lockedScrollY);
+    document.documentElement.classList.remove("lightbox-open");
   }
 
   private preloadAdjacentImages() {
@@ -641,7 +623,7 @@ export class AlbumComponent implements OnDestroy {
     img2.src = this.data.albums[prevIdx];
   }
 
-  // Touch Swipe Handlers (Swipe left/right to change photo, swipe down to close)
+  // Touch Swipe Handlers (Swipe left/right to change photo)
   onTouchStart(e: TouchEvent) {
     e.stopPropagation();
     if (e.touches.length === 1) {
@@ -677,12 +659,6 @@ export class AlbumComponent implements OnDestroy {
     // If zoomed, don't trigger swipe navigation
     if (this.isZoomed) return;
 
-    // Vertical swipe down to close modal
-    if (deltaY < -80 && Math.abs(deltaX) < 60) {
-      this.closeLightbox();
-      return;
-    }
-
     // Horizontal swipe for next / prev
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
       if (deltaX > swipeThreshold) {
@@ -698,7 +674,12 @@ export class AlbumComponent implements OnDestroy {
   @HostListener("window:keydown", ["$event"])
   handleKeyDown(event: KeyboardEvent) {
     if (!this.lightboxOpen) return;
-    if (event.key === "Escape") this.closeLightbox();
+    if (event.key === "Escape") {
+      event.preventDefault();
+      event.stopPropagation();
+      this.closeLightbox();
+      return;
+    }
     if (event.key === "ArrowRight") {
       event.preventDefault();
       this.nextImage();

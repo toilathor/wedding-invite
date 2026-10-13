@@ -199,6 +199,20 @@ body.lightbox-open app-quick-menu {
   pointer-events: none;
 }
 
+html.lightbox-open,
+body.lightbox-open {
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
+/* The album host sits in a lower page stacking layer than the events section.
+   Promote that layer while its fixed LightBox is mounted so neighboring
+   sections can never paint over the viewport overlay. */
+body.lightbox-open #page-album {
+  position: relative;
+  z-index: 999999 !important;
+}
+
 @keyframes lightboxSlideFromRight {
   from { transform: translate3d(7%, 0, 0) scale(0.99); }
   to { transform: translate3d(0, 0, 0) scale(1); }

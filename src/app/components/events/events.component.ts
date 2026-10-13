@@ -48,17 +48,17 @@ import { WeddingEventItem } from "../../models/wedding-data.model";
           ></div>
 
           <div
-            class="flex flex-col md:flex-row relative gap-10 md:gap-4 lg:gap-8 justify-evenly z-10"
+            class="flex flex-col md:grid md:grid-cols-3 relative gap-10 md:gap-6 lg:gap-8 z-10"
           >
             <div
               *ngFor="let item of events; let idx = index"
               [ngClass]="'reveal delay-' + (idx + 1) * 100"
               [style.z-index]="openCalendarIndex === idx ? 50 : (20 - idx)"
-              class="relative flex-1 flex flex-col justify-center items-center gap-3.5 sm:gap-4 md:gap-5"
+              class="relative min-w-0 flex flex-col justify-center items-center gap-3.5 sm:gap-4 md:gap-5"
             >
               <!-- Icon -->
               <div
-                class="w-[75px] h-[75px] sm:w-[85px] sm:h-[85px] md:w-[95px] md:h-[95px] flex items-center justify-center"
+                class="w-[65px] h-[65px] sm:w-[85px] sm:h-[85px] md:w-[95px] md:h-[95px] flex items-center justify-center"
               >
                 <img
                   [src]="item.icon"
@@ -71,7 +71,7 @@ import { WeddingEventItem } from "../../models/wedding-data.model";
               <div class="w-full relative flex justify-center items-center">
                 <!-- Badge Button -->
                 <div
-                  class="relative z-10 uppercase rounded-full text-white font-prata text-xs sm:text-sm md:text-base min-w-[160px] sm:min-w-[180px] md:min-w-[190px] lg:min-w-[230px] px-4 sm:px-5 py-2.5 sm:py-3 md:py-3.5 bg-[#A12F0C] shadow-md text-center"
+                  class="relative z-10 uppercase rounded-full text-white font-prata text-xs sm:text-sm md:text-sm lg:text-base min-w-[160px] sm:min-w-[180px] md:min-w-0 lg:min-w-[230px] px-4 sm:px-5 py-2.5 sm:py-3 md:py-3.5 bg-[#A12F0C] shadow-md text-center"
                 >
                   {{ item.title }}
                 </div>
@@ -111,7 +111,7 @@ import { WeddingEventItem } from "../../models/wedding-data.model";
                     [href]="item.link"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="inline-flex items-center justify-center text-xs md:text-xs font-semibold uppercase tracking-wider text-white bg-[#A12F0C] hover:bg-[#852509] rounded-none px-4 py-2 sm:py-2.5 transition-all font-prata shadow-xs active:scale-95 whitespace-nowrap"
+                    class="inline-flex items-center justify-center text-xs md:text-[10px] font-semibold uppercase tracking-wider text-white bg-[#A12F0C] hover:bg-[#852509] rounded-none px-4 md:px-2 py-2 sm:py-2.5 transition-all font-prata shadow-xs active:scale-95 whitespace-nowrap"
                   >
                     Chỉ đường
                   </a>
@@ -120,7 +120,7 @@ import { WeddingEventItem } from "../../models/wedding-data.model";
                   <button
                     type="button"
                     (click)="toggleCalendarMenu(idx, $event)"
-                    class="inline-flex items-center justify-center gap-1.5 text-xs md:text-xs font-semibold uppercase tracking-wider text-[#A12F0C] hover:text-[#7A2207] bg-[#F5E5DC] hover:bg-[#EAD4C7] rounded-none px-4 py-2 sm:py-2.5 transition-all font-prata shadow-xs active:scale-95 whitespace-nowrap cursor-pointer"
+                    class="inline-flex items-center justify-center gap-1.5 text-xs md:text-[10px] font-semibold uppercase tracking-wider text-[#A12F0C] hover:text-[#7A2207] bg-[#F5E5DC] hover:bg-[#EAD4C7] rounded-none px-4 md:px-2 py-2 sm:py-2.5 transition-all font-prata shadow-xs active:scale-95 whitespace-nowrap cursor-pointer"
                     title="Thêm sự kiện vào Google / Apple Calendar"
                   >
                     <span>Thêm vào lịch</span>
