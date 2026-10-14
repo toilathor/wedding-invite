@@ -26,6 +26,12 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Cấu hình moderation chỉ được public đọc để che từ khóa trên thiệp.
+    match /settings/moderation {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // Quy tắc cho Xác nhận tham dự (RSVP)
     match /rsvps/{phone} {
       // Cho phép đọc thông tin RSVP
