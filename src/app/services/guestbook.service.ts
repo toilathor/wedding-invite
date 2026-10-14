@@ -75,7 +75,13 @@ export class GuestbookService implements OnDestroy {
   private censorContent(content: string): string {
     return this.sensitiveKeywords().reduce((result, keyword) => {
       const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      return escaped ? result.replace(new RegExp(escaped, "gi"), "*") : result;
+      return escaped
+        ? result.replace(new RegExp(escaped, "gi"), (match) =>
+            match.length > 2
+              ? `${match[0]}${"*".repeat(match.length - 2)}${match[match.length - 1]}`
+              : "*".repeat(match.length),
+          )
+        : result;
     }, content);
   }
 
