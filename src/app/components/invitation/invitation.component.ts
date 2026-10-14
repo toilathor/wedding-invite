@@ -41,7 +41,7 @@ interface TimeLeft {
         ></div>
       </div>
 
-      <!-- Time, Date, Location & Countdown Banner Box -->
+      <!-- Time, Date & Countdown Banner Box -->
       <div
         class="relative px-3 sm:px-6 my-2 sm:my-4 md:my-6 lg:my-8 py-6 sm:py-8 md:py-12 lg:py-14 grid justify-center items-center bg-[#FBF7F5] text-[#A12F0C]"
       >
@@ -71,12 +71,6 @@ interface TimeLeft {
             <div class="self-stretch w-[1.5px] lg:w-[2px] bg-[#F4DBCE]"></div>
             <span class="leading-none">{{ data.year }}</span>
           </div>
-
-          <p
-            class="text-sm sm:text-base md:text-xl lg:text-2xl leading-relaxed font-prata max-w-3xl mx-auto px-4"
-          >
-            {{ data.location }}
-          </p>
 
           <!-- Countdown Timer -->
           <div class="mt-4 sm:mt-6 md:mt-8 lg:mt-10 max-w-xl mx-auto">
