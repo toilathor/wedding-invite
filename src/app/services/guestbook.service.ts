@@ -2,6 +2,7 @@ import { computed, Injectable, OnDestroy, signal } from "@angular/core";
 import {
   addDoc,
   collection,
+  doc,
   onSnapshot,
   orderBy,
   limit,
@@ -22,13 +23,23 @@ export const MAX_LOADED_WISHES = 50;
 })
 export class GuestbookService implements OnDestroy {
   private unsubscribeSnapshot?: Unsubscribe;
+  private unsubscribeModeration?: Unsubscribe;
+  private rawMessages = signal<GuestMessage[]>([]);
 
   readonly deviceId: string;
-  messages = signal<GuestMessage[]>([]);
+  readonly sensitiveKeywords = signal<string[]>([]);
+  messages = computed(() =>
+    this.rawMessages()
+      .filter((message) => !message.hidden)
+      .map((message) => ({
+        ...message,
+        content: this.censorContent(message.content),
+      })),
+  );
 
   // Đếm số lời chúc đã gửi từ thiết bị này
   myWishesCount = computed(() => {
-    return this.messages().filter((m) => m.deviceId === this.deviceId).length;
+    return this.rawMessages().filter((m) => m.deviceId === this.deviceId).length;
   });
 
   // Kiểm tra đã đạt giới hạn 5 lời chúc chưa
@@ -40,6 +51,32 @@ export class GuestbookService implements OnDestroy {
     this.deviceId = this.initDeviceId();
     // Luôn lấy dữ liệu mới nhất từ Firestore khi khởi tạo / reload trang
     this.listenToRealtimeWishes();
+    this.listenToModerationSettings();
+  }
+
+  private listenToModerationSettings() {
+    this.unsubscribeModeration = onSnapshot(
+      doc(db, "settings", "moderation"),
+      (snapshot) => {
+        const keywords = snapshot.data()?.["sensitiveKeywords"];
+        this.sensitiveKeywords.set(
+          Array.isArray(keywords)
+            ? keywords.filter(
+                (keyword): keyword is string =>
+                  typeof keyword === "string" && keyword.trim().length > 0,
+              )
+            : [],
+        );
+      },
+      (error) => console.error("Firestore moderation listener error:", error),
+    );
+  }
+
+  private censorContent(content: string): string {
+    return this.sensitiveKeywords().reduce((result, keyword) => {
+      const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return escaped ? result.replace(new RegExp(escaped, "gi"), "*") : result;
+    }, content);
   }
 
   private initDeviceId(): string {
@@ -110,6 +147,7 @@ export class GuestbookService implements OnDestroy {
                 rawDate: data["createdAt"],
                 deviceId: itemDeviceId,
                 isPinned: isMine,
+                hidden: data["hidden"] === true,
               };
             });
 
@@ -130,9 +168,9 @@ export class GuestbookService implements OnDestroy {
               return timeB - timeA;
             });
 
-            this.messages.set(list);
+            this.rawMessages.set(list);
           } else {
-            this.messages.set([]);
+            this.rawMessages.set([]);
           }
         },
         (error) => {
@@ -183,6 +221,9 @@ export class GuestbookService implements OnDestroy {
   ngOnDestroy() {
     if (this.unsubscribeSnapshot) {
       this.unsubscribeSnapshot();
+    }
+    if (this.unsubscribeModeration) {
+      this.unsubscribeModeration();
     }
   }
 }
