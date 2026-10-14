@@ -41,7 +41,7 @@ echo "[1/4] Build production để kiểm tra lỗi..."
 npm run build
 
 echo "[2/4] Khởi động Cloudflare Tunnel..."
-cloudflared_log="/tmp/wedding-invite-cloudflared.log"
+cloudflared_log="/tmp/wedding-invitation-cloudflared.log"
 cloudflared tunnel --url "http://127.0.0.1:$APP_PORT" >"$cloudflared_log" 2>&1 &
 cloudflared_pid=$!
 
@@ -65,7 +65,7 @@ npx ng serve \
   --host 0.0.0.0 \
   --port "$APP_PORT" \
   --allowed-hosts "$tunnel_host" \
-  >/tmp/wedding-invite-angular.log 2>&1 &
+  >/tmp/wedding-invitation-angular.log 2>&1 &
 angular_pid=$!
 
 for _ in {1..30}; do
@@ -76,7 +76,7 @@ for _ in {1..30}; do
 done
 
 if ! curl -fsS "http://127.0.0.1:$APP_PORT/" >/dev/null 2>&1; then
-  echo "Angular không khởi động được. Log: /tmp/wedding-invite-angular.log" >&2
+  echo "Angular không khởi động được. Log: /tmp/wedding-invitation-angular.log" >&2
   exit 1
 fi
 

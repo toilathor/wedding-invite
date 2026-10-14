@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "wedding-invite": {
+    "wedding-invitation": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -19,7 +19,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/wedding-invite",
+            "outputPath": "dist/wedding-invitation",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -66,10 +66,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "wedding-invite:build:production"
+              "buildTarget": "wedding-invitation:build:production"
             },
             "development": {
-              "buildTarget": "wedding-invite:build:development"
+              "buildTarget": "wedding-invitation:build:development"
             }
           },
           "defaultConfiguration": "development"
